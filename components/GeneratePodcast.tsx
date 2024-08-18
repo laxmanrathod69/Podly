@@ -26,6 +26,7 @@ const GeneratePodcast = (props: GeneratePodcastProps) => {
         <Button
           type="submit"
           className="text-16 bg-orange-1 py-4 font-bold text-white-1"
+          onClick={generatePodcast}
         >
           {isGenerating ? (
             <>
