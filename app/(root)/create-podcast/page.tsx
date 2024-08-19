@@ -31,6 +31,10 @@ import GeneratePodcast from "@/components/GeneratePodcast";
 import GenerateThumbnail from "@/components/GenerateThumbnail";
 import { Loader } from "lucide-react";
 import { Id } from "@/convex/_generated/dataModel";
+import { useToast } from "@/components/ui/use-toast";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useRouter } from "next/navigation";
 
 const voiceCategories = ["alloy", "shimmer", "nova", "echo", "fable", "onyx"];
 
@@ -40,6 +44,7 @@ const formSchema = z.object({
 });
 
 const CreatePodcast = () => {
+  const router = useRouter();
   const [voiceType, setVoiceType] = useState<string | null>(null);
   const [voicePrompt, setVoicePropmpt] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
@@ -53,6 +58,8 @@ const CreatePodcast = () => {
     null
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const createPodcast = useMutation(api.podcasts.createPodcast);
+  const { toast } = useToast();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -64,11 +71,46 @@ const CreatePodcast = () => {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-  }
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    try {
+      setIsSubmitting(true);
+      if (!audioUrl || !imageUrl || !voiceType) {
+        toast({
+          title: "Please fill out all required fields",
+        });
+        setIsSubmitting(false);
+        throw new Error("Missing required fields");
+      }
+      const podcast = await createPodcast({
+        podcastTitle: data.podcastTitle,
+        podcastDescription: data.podcastDiscription,
+        audioUrl,
+        audioStorageId: audioStorageId!,
+        audioDuration,
+        voiceType,
+        voicePrompt,
+        imageUrl,
+        imageStorageId: imageStorageId!,
+        imagePrompt,
+        views: 0,
+      });
+      console.log(podcast);
+      toast({
+        title: "Podcast created!",
+        description: "Your podcast has been created and is ready to generate.",
+      });
+      setIsSubmitting(false);
+      router.push("/");
+    } catch (error: any) {
+      console.error(error);
+      toast({
+        title: "Error submitting form",
+        description: error.message,
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <section className="mt-10 flex flex-col">
@@ -165,9 +207,11 @@ const CreatePodcast = () => {
             />
 
             <GenerateThumbnail
-              imageUrl={imageUrl}
+              image={imageUrl}
+              setImage={setImageUrl}
               imagePrompt={imagePrompt}
-              imageStorageId={imageStorageId}
+              setImagePrompt={setImagePrompt}
+              setImageStorageId={setImageStorageId}
             />
 
             <div className="mt-10 w-full">
