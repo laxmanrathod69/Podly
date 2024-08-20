@@ -4,6 +4,7 @@ const nextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "lovely-flamingo-139.convex.cloud" },
       { protocol: "https", hostname: "steady-bat-258.convex.cloud" },
+      { protocol: "https", hostname: "img.clerk.com" }, // TODO: Remove alater
     ],
   },
 };

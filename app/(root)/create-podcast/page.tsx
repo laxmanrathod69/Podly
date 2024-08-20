@@ -40,7 +40,7 @@ const voiceCategories = ["alloy", "shimmer", "nova", "echo", "fable", "onyx"];
 
 const formSchema = z.object({
   podcastTitle: z.string().min(2),
-  podcastDiscription: z.string().min(2),
+  podcastDescription: z.string().min(2),
 });
 
 const CreatePodcast = () => {
@@ -66,7 +66,7 @@ const CreatePodcast = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       podcastTitle: "",
-      podcastDiscription: "",
+      podcastDescription: "",
     },
   });
 
@@ -83,7 +83,7 @@ const CreatePodcast = () => {
       }
       const podcast = await createPodcast({
         podcastTitle: data.podcastTitle,
-        podcastDescription: data.podcastDiscription,
+        podcastDescription: data.podcastDescription,
         audioUrl,
         audioStorageId: audioStorageId!,
         audioDuration,
@@ -177,7 +177,7 @@ const CreatePodcast = () => {
             </div>
             <FormField
               control={form.control}
-              name="podcastDiscription"
+              name="podcastDescription"
               render={({ field }) => (
                 <FormItem className="flex flex-col gap-2.5">
                   <FormLabel className="text-16 font-bold text-white-1">
