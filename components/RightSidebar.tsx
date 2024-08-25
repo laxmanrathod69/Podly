@@ -8,17 +8,12 @@ import Carousel from "./Carousel";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
-import LoaderSpinner from "./LoaderSpinner";
 
 const RightSidebar = () => {
   const router = useRouter();
 
   const { user } = useUser();
   const topPodcasters = useQuery(api.users.getTopUserByPodcastCount);
-
-  if (!topPodcasters) {
-    return <LoaderSpinner />;
-  }
 
   return (
     <section className="right_sidebar text-white-1">
@@ -40,7 +35,6 @@ const RightSidebar = () => {
       </SignedIn>
       <section>
         <Header headerTitle={"Fans Like You"} />
-        {/* TODO: Fuck this error later 😠 */}
         <Carousel fansLikeDetail={topPodcasters!} />
       </section>
       <section className="flex flex-col gap-8 pt-12">

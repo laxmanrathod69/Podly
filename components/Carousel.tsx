@@ -5,24 +5,25 @@ import { EmblaCarouselType } from "embla-carousel";
 import { DotButton, useDotButton } from "./EmblaCarouselDotButton";
 import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
-import { CarouselProps } from "@/types";
+import { CarouselProps, TopPodcastersProps } from "@/types";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import LoaderSpinner from "./LoaderSpinner";
 
 const Carousel = ({ fansLikeDetail }: CarouselProps) => {
   const router = useRouter();
-
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay()]);
 
   const onNavButtonClick = useCallback((emblaApi: EmblaCarouselType) => {
     const autoplay = emblaApi?.plugins()?.autoplay;
-    if (!autoplay) return;
+    if (!autoplay) {
+      return;
+    }
 
     const resetOrStop =
       autoplay.options.stopOnInteraction === false
-        ? autoplay.reset
-        : autoplay.stop;
+        ? (autoplay.reset as () => void)
+        : (autoplay.stop as () => void);
 
     resetOrStop();
   }, []);
@@ -34,7 +35,9 @@ const Carousel = ({ fansLikeDetail }: CarouselProps) => {
 
   const slides =
     fansLikeDetail &&
-    fansLikeDetail?.filter((item: any) => item.totalPodcasts > 0);
+    fansLikeDetail?.filter(
+      (podcasts: TopPodcastersProps) => podcasts.totalPodcasts > 0
+    );
 
   if (!slides) {
     return <LoaderSpinner />;
@@ -60,7 +63,7 @@ const Carousel = ({ fansLikeDetail }: CarouselProps) => {
               fill
               className="absolute size-full rounded-xl border-none"
             />
-            <div className="glassmorhism-black relative z-10 flex flex-col rounded-b-xl p-4">
+            <div className="glassmorphism-black relative z-10 flex flex-col rounded-b-xl p-4">
               <h2 className="text-14 font-semibold text-white-1">
                 {podcast.podcast[0]?.podcastTitle}
               </h2>
@@ -69,7 +72,6 @@ const Carousel = ({ fansLikeDetail }: CarouselProps) => {
           </figure>
         ))}
       </div>
-
       <div className="flex justify-center gap-2">
         {scrollSnaps.map((_, index) => (
           <DotButton
