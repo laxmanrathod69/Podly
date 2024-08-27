@@ -1,24 +1,21 @@
-"use client";
-
-import { useCallback } from "react";
-import { EmblaCarouselType } from "embla-carousel";
+import React, { useCallback } from "react";
+import { EmblaOptionsType, EmblaCarouselType } from "embla-carousel";
 import { DotButton, useDotButton } from "./EmblaCarouselDotButton";
 import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
-import { CarouselProps, TopPodcastersProps } from "@/types";
+import { CarouselProps } from "@/types";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import LoaderSpinner from "./LoaderSpinner";
 
 const Carousel = ({ fansLikeDetail }: CarouselProps) => {
   const router = useRouter();
+
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay()]);
 
   const onNavButtonClick = useCallback((emblaApi: EmblaCarouselType) => {
     const autoplay = emblaApi?.plugins()?.autoplay;
-    if (!autoplay) {
-      return;
-    }
+    if (!autoplay || !("stopOnInteraction" in autoplay.options)) return;
 
     const resetOrStop =
       autoplay.options.stopOnInteraction === false
@@ -35,13 +32,9 @@ const Carousel = ({ fansLikeDetail }: CarouselProps) => {
 
   const slides =
     fansLikeDetail &&
-    fansLikeDetail?.filter(
-      (podcasts: TopPodcastersProps) => podcasts.totalPodcasts > 0
-    );
+    fansLikeDetail?.filter((item: any) => item.totalPodcasts > 0);
 
-  if (!slides) {
-    return <LoaderSpinner />;
-  }
+  if (!slides) return <LoaderSpinner />;
 
   return (
     <section
@@ -49,25 +42,25 @@ const Carousel = ({ fansLikeDetail }: CarouselProps) => {
       ref={emblaRef}
     >
       <div className="flex">
-        {slides?.slice(0, 5).map((podcast) => (
+        {slides.slice(0, 5).map((item) => (
           <figure
-            key={podcast._id}
+            key={item._id}
             className="carousel_box"
             onClick={() =>
-              router.push(`/podcasts/${podcast.podcast[0]?.podcastId}`)
+              router.push(`/podcasts/${item.podcast[0]?.podcastId}`)
             }
           >
             <Image
-              src={podcast.imageUrl}
-              alt="podcast card"
+              src={item.imageUrl}
+              alt="card"
               fill
               className="absolute size-full rounded-xl border-none"
             />
             <div className="glassmorphism-black relative z-10 flex flex-col rounded-b-xl p-4">
               <h2 className="text-14 font-semibold text-white-1">
-                {podcast.podcast[0]?.podcastTitle}
+                {item.podcast[0]?.podcastTitle}
               </h2>
-              <p className="text-12 font-normal text-white-2">{podcast.name}</p>
+              <p className="text-12 font-normal text-white-2">{item.name}</p>
             </div>
           </figure>
         ))}
