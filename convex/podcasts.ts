@@ -5,12 +5,12 @@ import { mutation, query } from "./_generated/server";
 // create podcast mutation
 export const createPodcast = mutation({
   args: {
-    audioStorageId: v.union(v.id("_storage"), v.null()),
+    audioStorageId: v.id("_storage"),
     podcastTitle: v.string(),
     podcastDescription: v.string(),
     audioUrl: v.string(),
     imageUrl: v.string(),
-    imageStorageId: v.union(v.id("_storage"), v.null()),
+    imageStorageId: v.id("_storage"),
     voicePrompt: v.string(),
     imagePrompt: v.string(),
     voiceType: v.string(),
@@ -34,13 +34,13 @@ export const createPodcast = mutation({
     }
 
     return await ctx.db.insert("podcasts", {
-      audioStorageId: args.audioStorageId!,
+      audioStorageId: args.audioStorageId,
       user: user[0]._id,
       podcastTitle: args.podcastTitle,
       podcastDescription: args.podcastDescription,
       audioUrl: args.audioUrl,
       imageUrl: args.imageUrl,
-      imageStorageId: args.imageStorageId!,
+      imageStorageId: args.imageStorageId,
       author: user[0].name,
       authorId: user[0].clerkId,
       voicePrompt: args.voicePrompt,
@@ -75,7 +75,7 @@ export const getPodcastByVoiceType = query({
       .query("podcasts")
       .filter((q) =>
         q.and(
-          q.eq(q.field("voiceType"), podcast?.voiceType), // TODO: Later Search podcasts based on some keywords, Author or description as well.
+          q.eq(q.field("voiceType"), podcast?.voiceType),
           q.neq(q.field("_id"), args.podcastId)
         )
       )

@@ -99,7 +99,7 @@ const PodcastPlayer = () => {
         hidden: !audio?.audioUrl || audio?.audioUrl === "",
       })}
     >
-      {/* TODO: change the color for indicator inside the Progress component in ui folder */}
+      {/* change the color for indicator inside the Progress component in ui folder */}
       <Progress
         value={(currentTime / duration) * 100}
         className="w-full"
