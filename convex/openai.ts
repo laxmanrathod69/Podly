@@ -24,9 +24,8 @@ export const generateAudioAction = action({
     try {
       const res = await axios.request(options);
       const mp3 = await res.data;
-      const buffer = mp3;
       console.log(mp3);
-      return buffer;
+      return mp3;
     } catch (err: any) {
       console.error(err);
       throw new ConvexError(err.message);
@@ -39,10 +38,10 @@ export const generateThumbnailAction = action({
   handler: async (_, { prompt }) => {
     const options = {
       method: "POST",
-      url: "https://ai-image-generator3.p.rapidapi.com/generate",
+      url: process.env.RAPIDAPI_IMG_URL!,
       headers: {
-        "x-rapidapi-key": "7352b8aa12msha4d1a1976ef54bdp1395a9jsnaa48ceb784e7",
-        "x-rapidapi-host": "ai-image-generator3.p.rapidapi.com",
+        "x-rapidapi-key": process.env.RAPIDAPI_KEY!,
+        "x-rapidapi-host": process.env.RAPIDAPI_IMG_HOST!,
         "Content-Type": "application/json",
       },
       data: {

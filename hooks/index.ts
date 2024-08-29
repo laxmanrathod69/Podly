@@ -24,7 +24,6 @@ export const useGeneratePodcast = ({
 
   const generatePodcast = async () => {
     setIsGenerating(true);
-
     setAudio("");
 
     if (!voicePrompt) {
@@ -50,8 +49,8 @@ export const useGeneratePodcast = ({
       setAudio(audioUrl!);
       setIsGenerating(false);
       toast({ title: "Podcast generated successfully!" });
-    } catch (error) {
-      console.error(`Error generating podcast: ${error}`);
+    } catch (err: any) {
+      console.error(`Error generating podcast: ${err.message}`);
       toast({ title: "Error creating a podcast", variant: "destructive" });
       setIsGenerating(false);
     }

@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -12,7 +13,7 @@ import { Progress } from "./ui/progress";
 const PodcastPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [duration, setDuration] = useState(0);
+  const [duration, setDuration] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const { audio } = useAudio();
@@ -68,7 +69,7 @@ const PodcastPlayer = () => {
         audioElement.removeEventListener("timeupdate", updateCurrentTime);
       };
     }
-  }, []);
+  }, [audioRef, setCurrentTime]);
 
   useEffect(() => {
     const audioElement = audioRef.current;
@@ -82,7 +83,8 @@ const PodcastPlayer = () => {
       audioElement?.pause();
       setIsPlaying(true);
     }
-  }, [audio]);
+  }, [audio, audioRef, setIsPlaying]);
+
   const handleLoadedMetadata = () => {
     if (audioRef.current) {
       setDuration(audioRef.current.duration);
@@ -109,10 +111,11 @@ const PodcastPlayer = () => {
         <audio
           ref={audioRef}
           src={audio?.audioUrl}
+          onEnded={handleAudioEnded}
           className="hidden"
           onLoadedMetadata={handleLoadedMetadata}
-          onEnded={handleAudioEnded}
         />
+
         <div className="flex items-center gap-4 max-md:hidden">
           <Link href={`/podcast/${audio?.podcastId}`}>
             <Image
