@@ -7,8 +7,9 @@ import AudioProvider from "@/providers/AudioProvider";
 const manrope = Manrope({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Podly",
-  description: "Generat your podcast using AI",
+  title: "Podly - Where Every Voice Finds Its Audience!",
+  description:
+    "🎧 Podly is a comprehensive podcast platform that serves as a one-stop destination for all things podcasting. Whether you're a creator looking to share your passion or a listener seeking your next audio adventure, Podly has you covered.",
   icons: {
     icon: "/icons/logo.svg",
   },
