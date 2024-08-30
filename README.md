@@ -1,12 +1,12 @@
 <div align="center">
   <br />
     <a href="https://podly-rose.vercel.app" target="_blank">
-      <img src="" alt="Project Banner">
+      <img src="https://github.com/laxman-rathod/Podly/blob/main/public/banner/podly_banner_image.png" alt="Project Banner">
     </a>
   <br />
   <div>
     <img src="https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="nextdotjs" />
-    <img src="https://shields.io/badge/react-0F172A?logo=react&style=for-the-badge" alt="reactdotjs" />
+    <img src="https://camo.githubusercontent.com/b351bf848730014b4a1d399b523d60c1dd581b0a95ef89c66caa25e9dbc8b02d/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f2d4f70656e41492d626c61636b3f7374796c653d666f722d7468652d6261646765266c6f676f436f6c6f723d7768697465266c6f676f3d6f70656e616926636f6c6f723d343132393931" alt="openai" />
     <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="typescript" />
     <img src="https://img.shields.io/badge/tailwindcss-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="tailwindcss" />
     <img src="https://img.shields.io/badge/Convex-F02E65?style=for-the-badge&logo=Convex&logoColor=white" alt="convex" />
@@ -106,7 +106,7 @@ npm install
 
 Create a `.env.local` file in the root directory and add the necessary environment variables (refer to `.env.example` for required variables).
 
-```ts
+```js
 
 CONVEX_DEPLOYMENT=<your-convex-deployment>
 
@@ -187,7 +187,7 @@ Open a pull request
 
 This project is licensed under the Apache License - see the [LICENSE](LICENSE) file for details.
 
-## Contact
+## 📩 Contact
 
 Laxman Rathod - [@Linkedin](https://linkedin.com/in/laxmanrathod1) - laxmanrathod.dev@gmail.com
 
