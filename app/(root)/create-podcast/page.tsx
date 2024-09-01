@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import GeneratePodcast from "@/components/GeneratePodcast";
 import GenerateThumbnail from "@/components/GenerateThumbnail";
@@ -35,8 +35,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
-
-const voiceCategories = ["alloy", "shimmer", "nova", "echo", "fable", "onyx"];
+import { useVoiceCategories, useVoiceType } from "@/hooks/use-voice-categories";
 
 const formSchema = z.object({
   podcastTitle: z.string().min(2),
@@ -45,6 +44,7 @@ const formSchema = z.object({
 
 const CreatePodcast = () => {
   const router = useRouter();
+  const [voiceTypeName, setVoiceTypeName] = useState<string | null>(null);
   const [voiceType, setVoiceType] = useState<string | null>(null);
   const [voicePrompt, setVoicePropmpt] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
@@ -74,7 +74,7 @@ const CreatePodcast = () => {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       setIsSubmitting(true);
-      if (!audioUrl || !imageUrl || !voiceType) {
+      if (!audioUrl || !imageUrl || !voiceType || !voiceTypeName) {
         toast({
           title: "Please fill out all required fields",
         });
@@ -112,6 +112,10 @@ const CreatePodcast = () => {
     }
   };
 
+  useEffect(() => {
+    setVoiceType(useVoiceType(voiceTypeName));
+  }, [voiceTypeName]);
+
   return (
     <section className="mt-10 flex flex-col">
       <h1 className="text-20 font-bold text-white-1">Create Podcast</h1>
@@ -144,7 +148,7 @@ const CreatePodcast = () => {
               <Label className="text-16 font-bold text-white-1">
                 Select AI Voice
               </Label>
-              <Select onValueChange={(value) => setVoiceType(value)}>
+              <Select onValueChange={(value) => setVoiceTypeName(value)}>
                 <SelectTrigger
                   className={cn(
                     "text-16 w-full border-none bg-black-1 focus-visible:ring-offset-orange-1 text-gray-1"
@@ -156,19 +160,19 @@ const CreatePodcast = () => {
                   />
                 </SelectTrigger>
                 <SelectContent className="text-16 border-none bg-black-1 font-bold text-white-1 focus:ring-orange-1">
-                  {voiceCategories.map((category) => (
+                  {useVoiceCategories.map(({ name, id }) => (
                     <SelectItem
-                      key={category}
-                      value={category}
+                      key={id}
+                      value={name}
                       className="capitalize focus:bg-orange-1"
                     >
-                      {category}
+                      {name}
                     </SelectItem>
                   ))}
                 </SelectContent>
-                {voiceType && (
+                {voiceTypeName && (
                   <audio
-                    src={`/${voiceType}.mp3`}
+                    src={`/${voiceTypeName === "Axel" ? `${voiceTypeName}.mp3` : `${voiceTypeName}.wav`}`}
                     autoPlay
                     className="hidden"
                   />

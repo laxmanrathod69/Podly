@@ -45,9 +45,16 @@ const PodcastDetails = ({
       </header>
 
       <PodcastDetailPlayer
-        isOwner={isOwner}
+        audioUrl={podcast.audioUrl!}
+        podcastTitle={podcast.podcastTitle}
+        author={podcast.author}
+        imageUrl={podcast.imageUrl!}
         podcastId={podcast._id}
-        {...podcast}
+        imageStorageId={podcast.imageStorageId!}
+        audioStorageId={podcast.audioStorageId!}
+        isOwner={isOwner}
+        authorImageUrl={podcast.authorImageUrl}
+        authorId={podcast.authorId}
       />
 
       <p className="text-white-2 text-16 pb-8 pt-[45px] font-medium max-md:text-center">
