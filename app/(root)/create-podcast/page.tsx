@@ -111,9 +111,9 @@ const CreatePodcast = () => {
       setIsSubmitting(false);
     }
   };
-
+  const voiceId = useVoiceType(voiceTypeName);
   useEffect(() => {
-    setVoiceType(useVoiceType(voiceTypeName));
+    setVoiceType(voiceId!);
   }, [voiceTypeName]);
 
   return (
