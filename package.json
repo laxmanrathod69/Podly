@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ai-sdk/google": "^0.0.46",
     "@clerk/nextjs": "^5.3.1",
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-dialog": "^1.1.1",
@@ -18,7 +19,8 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-toast": "^1.2.1",
     "@xixixao/uploadstuff": "^0.0.5",
-    "axios": "^1.7.5",
+    "ai": "^3.3.21",
+    "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "convex": "^1.14.0",
@@ -27,7 +29,7 @@
     "embla-carousel-react": "^8.2.0",
     "lucide-react": "^0.427.0",
     "next": "14.2.5",
-    "openai": "^4.56.0",
+    "playht": "^0.9.9-alpha.3",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.52.2",

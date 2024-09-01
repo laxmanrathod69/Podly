@@ -16,7 +16,7 @@ const GeneratePodcast = (props: GeneratePodcastProps) => {
         </Label>
         <Textarea
           className="input-class focus-visible:ring-offset-orange-1"
-          placeholder="Enter text prompt for AI to generate podcast audio"
+          placeholder="Enter a Title or Topics to generate a podcast"
           rows={5}
           value={props.voicePrompt}
           onChange={(e) => props.setVoicePrompt(e.target.value)}
@@ -25,6 +25,7 @@ const GeneratePodcast = (props: GeneratePodcastProps) => {
       <div className="mt-5 w-full max-w-[200px]">
         <Button
           type="button"
+          disabled={isGenerating}
           className="text-16 bg-orange-1 py-4 font-bold text-white-1"
           onClick={(e) => {
             e.preventDefault();

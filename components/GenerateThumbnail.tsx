@@ -28,12 +28,9 @@ const GenerateThumbnail = ({
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const { startUpload } = useUploadFiles(generateUploadUrl);
   const getImageUrl = useMutation(api.podcasts.getUrl);
-  const handlGenerateThumbnail = useAction(api.openai.generateThumbnailAction);
+  const handlGenerateThumbnail = useAction(api.ai.generateThumbnailAction);
 
   const handleImage = async (blob: Blob, fileName: string) => {
-    setIsImageLoading(true);
-    setImage("");
-
     try {
       const file = new File([blob], fileName, { type: "image/png " });
 
@@ -43,14 +40,18 @@ const GenerateThumbnail = ({
       setImageStorageId(storageId);
       const imageUrl = await getImageUrl({ storageId });
       setImage(imageUrl!);
-      setIsImageLoading(false);
       toast({ title: "Thumbnail generated successfully!" });
     } catch (error) {
       console.error(error);
       toast({ title: "Error generating thumbnail", variant: "destructive" });
+    } finally {
+      setIsImageLoading(false);
     }
   };
   const generateImage = async () => {
+    setIsImageLoading(true);
+    setImage("");
+
     try {
       const response = await handlGenerateThumbnail({ prompt: imagePrompt });
       const blob = new Blob([response], { type: "image/png" });
@@ -58,6 +59,8 @@ const GenerateThumbnail = ({
     } catch (error) {
       console.error(error);
       toast({ title: "Error generating thumbnail", variant: "destructive" });
+    } finally {
+      setIsImageLoading(false);
     }
   };
   const uploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,7 +118,10 @@ const GenerateThumbnail = ({
             <Button
               type="submit"
               className="text-16 bg-orange-1 py-4 font-bold text-white-1"
-              onClick={generateImage}
+              onClick={(e) => {
+                e.preventDefault();
+                generateImage();
+              }}
             >
               {isImageLoading ? (
                 <>
