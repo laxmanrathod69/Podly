@@ -40,7 +40,12 @@ const config = {
         gray: {
           1: "#71788B",
         },
+        progress: {
+          bg: "hsl(0deg 0% 25.1%)",
+          indicator: "hsl(0deg 0% 100%)",
+        },
       },
+
       backgroundImage: {
         "nav-focus":
           "linear-gradient(270deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.00) 100%)",
