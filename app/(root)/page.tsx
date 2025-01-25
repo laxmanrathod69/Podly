@@ -12,17 +12,9 @@ const Home = () => {
       <section className="flex flex-col gap-5">
         <h1 className="text-20 font-bold text-white-1">Trending Podcasts</h1>
         <div className="podcast_grid">
-          {trensingPodcasts?.map(
-            ({ _id, imageUrl, podcastTitle, podcastDescription }) => (
-              <PodcastCard
-                key={_id}
-                imgUrl={imageUrl!}
-                title={podcastTitle}
-                podcastId={_id}
-                description={podcastDescription}
-              />
-            )
-          )}
+          {trensingPodcasts?.map(({ _id }) => (
+            <PodcastCard key={_id} podcastId={_id} />
+          ))}
         </div>
       </section>
     </div>
