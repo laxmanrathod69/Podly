@@ -1,10 +1,15 @@
-import Image from "next/image";
+import { onAuthenticatedUser } from "@/actions/auth.actions"
+import Image from "next/image"
+import { redirect } from "next/navigation"
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+interface Props {
+  children: React.ReactNode
+}
+
+const AuthLayout = async ({ children }: Props) => {
+  const user = await onAuthenticatedUser()
+  if (user.status === 200) redirect("/callback/sign-in")
+
   return (
     <main className="relative h-screen w-full">
       <div className="absolute size-full">
@@ -17,5 +22,7 @@ export default function RootLayout({
       </div>
       {children}
     </main>
-  );
+  )
 }
+
+export default AuthLayout

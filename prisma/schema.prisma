@@ -1,0 +1,41 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  firstname String
+  lastname  String
+  createdAt DateTime @default(now())
+  clerkId   String   @unique
+  image     String?
+
+  podcast Podcast[]
+  monthlyListeners Int
+}
+
+model Podcast {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title            String
+  description      String
+  voice            String
+  audio            String?
+  thumbnail        String?
+  voiceId          String
+  voiceStyle       String
+  author           User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId         String   @db.Uuid
+  authorImage      String
+  transcript       String
+  imagePrompt      String?
+  audioDuration    Int
+  views            Int
+  createdAt        DateTime @default(now())
+}

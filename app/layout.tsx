@@ -1,10 +1,13 @@
-import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
-import "./globals.css";
-import { ConvexClerkProvider } from "@/providers/ConvexClerkProvider";
-import AudioProvider from "@/providers/AudioProvider";
+import type { Metadata } from "next"
+import { Manrope } from "next/font/google"
+import AudioProvider from "@/providers/AudioProvider"
+import { Toaster } from "sonner"
+import { ThemeProvider } from "@/components/theme"
+import { ReactQueryProvider } from "@/react-query/provider"
+import "./globals.css"
+import { ClerkProvider } from "@clerk/nextjs"
 
-const manrope = Manrope({ subsets: ["latin"] });
+const manrope = Manrope({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Podly - Where Every Voice Finds Its Audience!",
@@ -13,20 +16,31 @@ export const metadata: Metadata = {
   icons: {
     icon: "/icons/logo.svg",
   },
-};
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
-    <ConvexClerkProvider>
+    <ClerkProvider>
       <html lang="en">
+        {/* TODO: delete audio provider later */}
         <AudioProvider>
-          <body className={manrope.className}>{children}</body>
+          <body className={manrope.className}>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <ReactQueryProvider>{children}</ReactQueryProvider>
+              <Toaster />
+            </ThemeProvider>
+          </body>
         </AudioProvider>
       </html>
-    </ConvexClerkProvider>
-  );
+    </ClerkProvider>
+  )
 }
