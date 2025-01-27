@@ -5,7 +5,5 @@ const nextConfig = {
     remotePatterns: [{ protocol: "https", hostname: "img.clerk.com" }],
   },
 }
-// "lint-staged": {
-//     "**/*": "prettier --write --ignore-unknown"
-//   }
+
 export default nextConfig
