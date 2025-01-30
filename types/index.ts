@@ -50,22 +50,18 @@ export interface ProfilePodcastProps {
   listeners: number
 }
 
-export interface GeneratePodcastProps {
-  voiceName?: string | null
-  voiceId: string
-  voiceStyle: string
-  setAudio: Dispatch<SetStateAction<string>>
+export interface GeneratePodcastContentProps {
   audio: string
-  setAudioStorageId: Dispatch<SetStateAction<Id<"_storage"> | null>>
   voicePrompt: string
   setVoicePrompt: Dispatch<SetStateAction<string>>
+  setAudio: Dispatch<SetStateAction<string>>
   setAudioDuration: Dispatch<SetStateAction<number>>
+  setTranscript: Dispatch<SetStateAction<string>>
 }
 
 export interface GenerateThumbnailProps {
-  setImage: Dispatch<SetStateAction<string>>
-  setImageStorageId: Dispatch<SetStateAction<Id<"_storage"> | null>>
-  image: string
+  thumbnail: string
+  setThumbnail: Dispatch<SetStateAction<string>>
   imagePrompt: string
   setImagePrompt: Dispatch<SetStateAction<string>>
 }

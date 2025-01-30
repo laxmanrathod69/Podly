@@ -1,15 +1,15 @@
-"use client";
+"use client"
 
-import Image from "next/image";
-import Link from "next/link";
-import { formatTime } from "@/lib/formatTime";
-import { cn } from "@/lib/utils";
-import { useAudio } from "@/providers/AudioProvider";
-import { Progress } from "@/components/ui/progress";
-import { usePlayerControls } from "@/hooks/podcast-player/main-controls";
+import Image from "next/image"
+import Link from "next/link"
+import { formatTime } from "@/lib/formatTime"
+import { cn } from "@/lib/utils"
+import { useAudio } from "@/providers/AudioProvider"
+import { Progress } from "@/components/ui/progress"
+import { usePlayerControls } from "@/hooks/podcast-player/main-controls"
 
 const PodcastPlayer = () => {
-  const { audio } = useAudio();
+  const { audio } = useAudio()
 
   const {
     togglePlayPause,
@@ -24,7 +24,7 @@ const PodcastPlayer = () => {
     isMuted,
     currentTime,
     handleSeek,
-  } = usePlayerControls();
+  } = usePlayerControls()
 
   return (
     <div
@@ -42,7 +42,7 @@ const PodcastPlayer = () => {
         />
 
         <div className="flex w-[60%] items-center gap-4 max-md:hidden">
-          <Link href={`/podcast/${audio?.podcastId}`}>
+          <Link href={`/podcasts/${audio?.podcastId}`}>
             <Image
               src={audio?.imageUrl! || "/images/player1.png"}
               width={64}
@@ -71,7 +71,7 @@ const PodcastPlayer = () => {
               <h2 className="text-12 font-bold text-white-4">-5</h2>
             </div>
             <Image
-              src={isPlaying ? "/icons/Pause.svg" : "/icons/Play.svg"}
+              src={isPlaying ? "/icons/Pause.svg" : "/icons/Play-gray.svg"}
               width={30}
               height={30}
               alt="play"
@@ -112,7 +112,7 @@ const PodcastPlayer = () => {
         </div>
       </section>
     </div>
-  );
-};
+  )
+}
 
-export default PodcastPlayer;
+export default PodcastPlayer

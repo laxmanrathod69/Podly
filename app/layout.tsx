@@ -4,8 +4,8 @@ import AudioProvider from "@/providers/AudioProvider"
 import { Toaster } from "sonner"
 import { ThemeProvider } from "@/components/theme"
 import { ReactQueryProvider } from "@/react-query/provider"
-import "./globals.css"
 import { ClerkProvider } from "@clerk/nextjs"
+import "./globals.css"
 
 const manrope = Manrope({ subsets: ["latin"] })
 
