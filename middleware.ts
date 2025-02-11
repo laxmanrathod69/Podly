@@ -1,25 +1,16 @@
-// import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-
-// const isPublicRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)", "/"]);
-
-// export default clerkMiddleware((auth, req) => {
-//   if (!isPublicRoute(req)) auth().protect();
-// });
-
-// export const config = {
-//   matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
-// };
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
 
-const isProtectedRoute = createRouteMatcher(["/podcast(.*)"]) // TODO: add more routes
+const isProtectedRoute = createRouteMatcher(["/podcast(.*)"])
 
 export default clerkMiddleware(async (auth, req) => {
   const baseHost = "localhost:3000"
   const host = req.headers.get("host")
   const reqPath = req.nextUrl.pathname
   const origin = req.nextUrl.origin
-  if (isProtectedRoute(req)) auth().protect()
+
+  if (isProtectedRoute(req)) auth.protect()
+
   if (!baseHost.includes(host as string) && reqPath.includes("/podcast")) {
     const response = await fetch(`${origin}/api/domain?host=${host}`, {
       method: "GET",

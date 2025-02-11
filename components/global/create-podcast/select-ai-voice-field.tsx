@@ -20,8 +20,12 @@ export const SelectAiVoice = ({
 }: SelectAiVoiceProps) => {
   return (
     <div className="flex flex-col gap-2.5">
-      <Label className="text-16 font-bold text-white-1">Select AI Voice</Label>
-
+      <div className="flex items-center justify-start">
+        <Label className="text-16 font-bold text-white-1">
+          Select AI Voice
+        </Label>
+        <p className="text-red-500 text-sm">*</p>
+      </div>
       <Select onValueChange={(value) => setCurrentVoice(value)}>
         <SelectTrigger className="text-16 w-full border-none bg-black-1 focus-visible:ring-offset-orange-1 text-gray-1">
           <SelectValue

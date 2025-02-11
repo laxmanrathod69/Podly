@@ -27,7 +27,7 @@ model Podcast {
   description      String
   voice            String
   audio            String?
-  thumbnail        String?
+  thumbnail        String
   voiceId          String
   voiceStyle       String
   author           User     @relation(fields: [authorId], references: [id], onDelete: Cascade)

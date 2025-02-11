@@ -83,7 +83,7 @@ const GenerateThumbnail = ({
               className="input-class font-light focus-visible:ring-offset-orange-1"
               placeholder="Provide text to generate thumbnail"
               rows={5}
-              value={imagePrompt}
+              value={imagePrompt || ""}
               onChange={(e) => setImagePrompt(e.target.value)}
             />
           </div>
@@ -91,10 +91,11 @@ const GenerateThumbnail = ({
             <Button
               type="submit"
               className="text-16 bg-orange-1 py-4 font-bold text-white-1 hover:bg-orange-600 transition-all ease-in-out duration-200"
-              disabled={isGeneratingThumbnail}
+              disabled={isGeneratingThumbnail || !imagePrompt}
               onClick={(e) => {
                 e.preventDefault()
-                !isGeneratingThumbnail && generatePodcastThumbnail(imagePrompt)
+                !isGeneratingThumbnail &&
+                  generatePodcastThumbnail(imagePrompt || "")
               }}
             >
               {isGeneratingThumbnail ? (

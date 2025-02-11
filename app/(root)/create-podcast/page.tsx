@@ -1,100 +1,99 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
+import { Button } from "@/components/ui/button"
+import { Form } from "@/components/ui/form"
 
-import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
-import GeneratePodcast from "@/components/GeneratePodcast";
-import GenerateThumbnail from "@/components/GenerateThumbnail";
-import { Loader } from "lucide-react";
-import { Id } from "@/convex/_generated/dataModel";
-import { useRouter } from "next/navigation";
-import { useVoiceDetails } from "@/hooks/use-voice-categories";
-import { useSelectVoiceType } from "@/hooks/create-podcast";
-import { useFormValidation } from "@/hooks/create-podcast/form-validation";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { z } from "zod";
-import { SelectAiVoice } from "@/components/create-podcast";
-import { TitleField } from "@/components/create-podcast/title-field";
-import { DescriptionField } from "@/components/create-podcast/description-field";
-import { toast } from "sonner";
+import { cn } from "@/lib/utils"
+import { useEffect, useState } from "react"
+import GenerateThumbnail from "@/components/global/create-podcast/generate-podcast-thumbnail"
+import { Loader2 } from "lucide-react"
+import { useSelectVoiceType } from "@/hooks/ai-voices"
+import { SelectAiVoice } from "@/components/global/create-podcast/select-ai-voice-field"
+import { TitleField } from "@/components/global/create-podcast/title-field"
+import { DescriptionField } from "@/components/global/create-podcast/description-field"
+import { toast } from "sonner"
+import { podcastFormSchema, PodcastFormValues } from "@/hooks/podcast/schema"
+import { z } from "zod"
+import { GeneratePodcastContent } from "@/components/global/create-podcast/generate-podcast-content"
+import { useCreatePodcast } from "@/hooks/podcast/create-podcast/intex"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { onAuthenticatedUser } from "@/actions/auth.actions"
 
 const CreatePodcast = () => {
-  const [audioUrl, setAudioUrl] = useState<string>("");
-  const [audioDuration, setAudioDuration] = useState<number>(0);
-  const [imageUrl, setImageUrl] = useState<string>("");
-  const [imagePrompt, setImagePrompt] = useState<string>("");
-  const [audioStorageId, setAudioStorageId] = useState<Id<"_storage"> | null>(
-    null
-  );
-  const [imageStorageId, setImageStorageId] = useState<Id<"_storage"> | null>(
-    null
-  );
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const router = useRouter();
+  const [userId, setUserId] = useState<string>("")
+  const [userImage, setUserImage] = useState<string | null>("")
+  const [audio, setAudio] = useState<string | null>("")
+  const [audioDuration, setAudioDuration] = useState<number>(0)
+  const [thumbnail, setThumbnail] = useState<string>("")
+  const [imagePrompt, setImagePrompt] = useState<string | null>("")
+  const [transcript, setTranscript] = useState<string>("")
+  const [views, setViews] = useState<number>(0)
 
   const {
     currentVoice,
+    setCurrentVoice,
     voiceId,
-    setVoiceId,
     voicePrompt,
-    setVoicePropmpt,
+    setVoicePrompt,
     voiceStyle,
-    setVoiceStyle,
-  } = useSelectVoiceType();
+  } = useSelectVoiceType()
 
-  const { form, formSchema } = useFormValidation();
-  const createPodcast = useMutation(api.podcasts.createPodcast);
+  const { createPodcast, isCreating } = useCreatePodcast()
 
-  useEffect(() => {
-    const { voiceId: id, voiceStyle } = useVoiceDetails(currentVoice);
-    setVoiceId(id!);
-    setVoiceStyle(voiceStyle!);
-  }, [currentVoice]);
+  const form = useForm<PodcastFormValues>({
+    resolver: zodResolver(podcastFormSchema),
+    defaultValues: {
+      podcastTitle: "",
+      podcastDescription: "",
+    },
+  })
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    try {
-      setIsSubmitting(true);
+  const onSubmit = (data: z.infer<typeof podcastFormSchema>) => {
+    if (
+      !data.podcastTitle ||
+      !data.podcastDescription ||
+      !audio ||
+      !currentVoice
+    ) {
+      return toast.error("Error", { description: "Missing required fields" })
+    }
 
-      if (!audioUrl || !imageUrl || !currentVoice) {
-        setIsSubmitting(false);
-        return toast("Error", { description: "Missing required fields" });
-      }
-
-      const podcast = await createPodcast({
-        podcastTitle: data.podcastTitle,
-        podcastDescription: data.podcastDescription,
-        audioUrl,
-        audioStorageId: audioStorageId!,
-        audioDuration,
-        voiceName: currentVoice,
+    if (!isCreating) {
+      createPodcast({
+        title: data.podcastTitle,
+        description: data.podcastDescription,
+        voice: currentVoice,
+        audio,
+        thumbnail,
         voiceId,
         voiceStyle,
-        voicePrompt,
-        imageUrl,
-        imageStorageId: imageStorageId!,
+        authorId: userId,
+        authorImage: userImage,
+        transcript,
         imagePrompt,
-        views: 0,
-      });
+        audioDuration,
+        views,
+      })
 
-      // TODO: Check create podcasts
-      if (podcast) {
-        toast("Success", {
-          description:
-            "Your podcast has been created and is ready to generate.",
-        });
-        setIsSubmitting(false);
-        router.push("/");
-      }
-    } catch (error: any) {
-      setIsSubmitting(false);
-      return toast("Error", {
-        description: "An error occurred while creating podcast",
-      });
+      form.reset()
+      setAudio("")
+      setThumbnail("")
+      setImagePrompt("")
+      setTranscript("")
     }
-  };
+  }
+
+  useEffect(() => {
+    const getUserDetails = async () => {
+      const user = await onAuthenticatedUser()
+      if (user.status === 200) {
+        setUserId(user.id!)
+        setUserImage(user?.image ?? null)
+      }
+    }
+    getUserDetails()
+  }, [])
 
   return (
     <section className="mt-10 flex flex-col">
@@ -105,44 +104,44 @@ const CreatePodcast = () => {
           className="mt-12 flex flex-col w-full"
         >
           <div className="flex flex-col gap-[30px] border-b border-black-5 pb-10">
-            <TitleField />
-            <SelectAiVoice />
-            <DescriptionField />
+            <TitleField form={form} />
+            <SelectAiVoice
+              currentVoice={currentVoice}
+              setCurrentVoice={setCurrentVoice}
+            />
+            <DescriptionField form={form} />
           </div>
 
           <div className="flex flex-col pt-10">
-            <GeneratePodcast
-              audio={audioUrl}
-              setAudio={setAudioUrl}
-              setAudioStorageId={setAudioStorageId}
+            <GeneratePodcastContent
+              audio={audio}
+              setAudio={setAudio}
               setAudioDuration={setAudioDuration}
-              voiceName={currentVoice!}
-              voiceStyle={voiceStyle!}
+              setTranscript={setTranscript}
               voicePrompt={voicePrompt}
-              setVoicePrompt={setVoicePropmpt}
+              setVoicePrompt={setVoicePrompt}
             />
 
             <GenerateThumbnail
-              image={imageUrl}
-              setImage={setImageUrl}
+              thumbnail={thumbnail}
+              setThumbnail={setThumbnail}
               imagePrompt={imagePrompt}
               setImagePrompt={setImagePrompt}
-              setImageStorageId={setImageStorageId}
             />
 
             <div className="mt-10 w-full">
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isCreating}
                 className={cn(
                   "text-16 w-full bg-orange-1 py-4 font-extrabold text-white-1 transition-all duration-500 hover:bg-black-1 hover:border border-orange-1",
-                  isSubmitting && "cursor-not-allowed"
+                  isCreating && "cursor-not-allowed",
                 )}
               >
-                {isSubmitting ? (
+                {isCreating ? (
                   <>
-                    Submitting
-                    <Loader size={20} className="animate-spin ml-2" />
+                    <Loader2 size={16} className="animate-spin mr-2" />
+                    Submitting..
                   </>
                 ) : (
                   "Submit & Publish Podcast"
@@ -153,7 +152,7 @@ const CreatePodcast = () => {
         </form>
       </Form>
     </section>
-  );
-};
+  )
+}
 
-export default CreatePodcast;
+export default CreatePodcast

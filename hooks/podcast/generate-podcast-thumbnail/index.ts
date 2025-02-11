@@ -1,3 +1,5 @@
+"use client"
+
 import { onGeneratePodcastThumbnail } from "@/actions/podcast.actions"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
@@ -29,6 +31,6 @@ export const useGeneratePodcastThumbnail = () => {
   return {
     generatePodcastThumbnail,
     isGeneratingThumbnail,
-    thumbnail_url: data?.thumbnail,
+    thumbnail_url: data?.thumbnail || "",
   }
 }

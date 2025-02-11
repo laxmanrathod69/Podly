@@ -19,10 +19,13 @@ export const TitleField = ({ form }: TitleFieldProps) => {
       control={form.control}
       name="podcastTitle"
       render={({ field }) => (
-        <FormItem className="flex flex-col gap-2.5">
-          <FormLabel className="text-16 font-bold text-white-1">
-            Title
-          </FormLabel>
+        <FormItem className="flex flex-col gap-[.20rem]">
+          <div className="flex items-center justify-start gap-1">
+            <FormLabel className="text-16 font-bold text-white-1">
+              Title
+            </FormLabel>
+            <p className="text-red-500 text-sm">*</p>
+          </div>
           <FormControl>
             <Input
               className="input-class focus-visible:ring-offset-orange-1"
@@ -30,7 +33,7 @@ export const TitleField = ({ form }: TitleFieldProps) => {
               {...field}
             />
           </FormControl>
-          <FormMessage className="text-red-600" />
+          <FormMessage className="text-red-600 text-xs" />
         </FormItem>
       )}
     />
