@@ -13,17 +13,17 @@ import {
   onGetTrendingPodcasts,
 } from "@/actions/podcast.actions"
 
-const HomeLayout = ({ children }: childrenProp) => {
+const HomeLayout = async ({ children }: childrenProp) => {
   const query = new QueryClient()
 
-  query.prefetchQuery({
+  await query.prefetchQuery({
     queryKey: ["trending-podcasts"],
-    queryFn: () => onGetTrendingPodcasts(),
+    queryFn: onGetTrendingPodcasts,
   })
 
-  query.prefetchQuery({
+  await query.prefetchQuery({
     queryKey: ["recent-podcasts"],
-    queryFn: () => onGetRecentPodcasts(),
+    queryFn: onGetRecentPodcasts,
   })
 
   return (

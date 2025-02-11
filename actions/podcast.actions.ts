@@ -3,35 +3,39 @@
 import prisma from "@/lib/prisma"
 import { generateTextPrompt, generateThumbnailPrompt } from "@/lib/prompt"
 import { cleanScript } from "@/lib/utils"
-import { CreatePodcastData } from "@/types/podcast"
 
 import { google } from "@ai-sdk/google"
 import { generateText } from "ai"
 
-export const onCreatePodcast = async (data: CreatePodcastData) => {
-  try {
-    if (!data) {
-      return { status: 400, message: "Invalid data" }
-    }
+const logError = (message: string, error: any) => {
+  console.error(`${message}: ${JSON.stringify(error)}`)
+}
 
+export const onCreatePodcast = async (data: CreatePodcastData) => {
+  if (!data || Object.keys(data).length === 0) {
+    return { status: 400, message: "Invalid podcast data provided" }
+  }
+
+  try {
     const podcast = await prisma.podcast.create({
-      data: { ...data },
+      data,
       select: { id: true },
     })
 
-    if (podcast && podcast.id) {
-      return {
-        status: 200,
-        message: "Podcast created successfully",
-        id: podcast.id,
-      }
+    if (!podcast?.id) {
+      return { status: 400, message: "Failed to create podcast" }
     }
 
-    return { status: 400, message: "Failed to create podcast" }
+    return {
+      status: 201,
+      message: "Podcast created successfully",
+      podcastId: podcast.id,
+    }
   } catch (error: any) {
+    logError("Error creating podcast", error)
     return {
       status: 500,
-      message: error.message || "Oops! Something went wrong.",
+      message: error.message || "Internal Server Error while creating podcast",
     }
   }
 }
@@ -107,7 +111,7 @@ export const onGeneratePodcastContent = async (topic: string) => {
       script,
     }
   } catch (error: any) {
-    console.error(`An error occured: ${JSON.stringify(error)}`)
+    logError("An error occured while generating podcast audio", error)
     return {
       status: 500,
       message: error.message || "Oops! Something went wrong.",
@@ -139,7 +143,7 @@ export const onGeneratePodcastThumbnail = async (prompt: string) => {
     const response = await fetch(url, options)
     const result = await response.json()
 
-    if (!result) {
+    if (!result || !result.url) {
       return {
         status: 400,
         message: "Failed to generate podcast thumbnail",
@@ -149,13 +153,125 @@ export const onGeneratePodcastThumbnail = async (prompt: string) => {
     return {
       status: 200,
       message: "Podcast thumbnail generated successfully",
-      thumbnail: result.url as string,
+      thumbnail: (result.url as string) || "",
     }
-  } catch (error) {
-    console.error(`An error occured: ${JSON.stringify(error)}`)
+  } catch (error: any) {
+    logError("An error occured", error)
     return {
       status: 500,
-      message: "Oops! Something went wrong.",
+      message: error.message || "Oops! Something went wrong.",
+    }
+  }
+}
+
+export const onGetRecentPodcasts = async () => {
+  try {
+    const podcasts = await prisma.podcast.findMany({
+      take: 5,
+      select: {
+        id: true,
+        title: true,
+        thumbnail: true,
+        description: true,
+        listeners: true,
+        author: true,
+        authorImage: true,
+        authorId: true,
+        transcript: true,
+        audio: true,
+        audioDuration: true,
+        createdAt: true,
+        voice: true,
+      },
+      orderBy: { createdAt: "asc" },
+    })
+
+    if (!podcasts || !podcasts.length) {
+      return { status: 400, message: "Failed to fetch recent podcasts" }
+    }
+
+    return { status: 200, data: podcasts }
+  } catch (error: any) {
+    logError("An error occured while fetching recent podcasts", error)
+    return {
+      status: 500,
+      message: error.message || "Oops! Something went wrong.",
+    }
+  }
+}
+
+export const onGetTrendingPodcasts = async () => {
+  try {
+    const podcasts = await prisma.podcast.findMany({
+      take: 10,
+      select: {
+        id: true,
+        title: true,
+        thumbnail: true,
+        description: true,
+        listeners: true,
+        author: true,
+        authorImage: true,
+        authorId: true,
+        transcript: true,
+        audio: true,
+        audioDuration: true,
+        createdAt: true,
+        voice: true,
+      },
+      orderBy: { listeners: "desc" },
+    })
+
+    if (!podcasts || !podcasts.length) {
+      return { status: 400, message: "Failed to fetch trending podcasts" }
+    }
+
+    return { status: 200, data: podcasts }
+  } catch (error: any) {
+    logError("An error occured while fetching trending podcasts", error)
+    return {
+      status: 500,
+      message: error.message || "Oops! Something went wrong.",
+    }
+  }
+}
+
+export const onGetPodcastDetails = async (id: string) => {
+  if (!id) {
+    return { status: 400, message: "Podcast ID is required" }
+  }
+
+  try {
+    const podcast = await prisma.podcast.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        thumbnail: true,
+        description: true,
+        listeners: true,
+        author: true,
+        authorImage: true,
+        authorId: true,
+        transcript: true,
+        audio: true,
+        audioDuration: true,
+        createdAt: true,
+        voice: true,
+      },
+    })
+
+    if (!podcast?.id) {
+      return { status: 404, message: "Podcast not found" }
+    }
+
+    return { status: 200, data: podcast }
+  } catch (error: any) {
+    logError("An error occured while fetching podcast details", error)
+    return {
+      status: 500,
+      message:
+        error.message || "Internal Server Error while fetching podcast details",
     }
   }
 }
