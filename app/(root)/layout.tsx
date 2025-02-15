@@ -13,7 +13,7 @@ import {
   onGetTrendingPodcasts,
 } from "@/actions/podcast.actions"
 
-const HomeLayout = async ({ children }: childrenProp) => {
+const HomeLayout = async ({ children }: ChildrenProp) => {
   const query = new QueryClient()
 
   await query.prefetchQuery({

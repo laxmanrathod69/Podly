@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
 import { Manrope } from "next/font/google"
-import AudioProvider from "@/providers/AudioProvider"
 import { Toaster } from "sonner"
 import { ThemeProvider } from "@/components/theme"
 import { ReactQueryProvider } from "@/react-query/provider"
 import { ClerkProvider } from "@clerk/nextjs"
 import "./globals.css"
+import { PodcastProvider } from "@/contexts/podcast-context"
 
 const manrope = Manrope({ subsets: ["latin"] })
 
@@ -18,16 +18,11 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+const RootLayout = ({ children }: ChildrenProp) => {
   return (
     <ClerkProvider>
       <html lang="en">
-        {/* TODO: delete audio provider later */}
-        <AudioProvider>
+        <PodcastProvider>
           <body className={manrope.className}>
             <ThemeProvider
               attribute="class"
@@ -39,8 +34,10 @@ export default function RootLayout({
               <Toaster />
             </ThemeProvider>
           </body>
-        </AudioProvider>
+        </PodcastProvider>
       </html>
     </ClerkProvider>
   )
 }
+
+export default RootLayout

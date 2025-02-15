@@ -18,7 +18,18 @@ export const onCreatePodcast = async (data: CreatePodcastData) => {
 
   try {
     const podcast = await prisma.podcast.create({
-      data,
+      data: {
+        title: data.title,
+        description: data.description,
+        voice: data.voice,
+        audio: data.audio,
+        thumbnail: data.thumbnail,
+        authorId: data.author.id,
+        authorImage: data.author.image,
+        transcript: data.transcript,
+        audioDuration: data.audioDuration,
+        listeners: data.listeners,
+      },
       select: { id: true },
     })
 
@@ -107,7 +118,7 @@ export const onGeneratePodcastContent = async (topic: string) => {
     return {
       status: 200,
       message: "Podcast speech generated successfully",
-      audio: audio[0]?.link,
+      audio: audio[0]?.link as string,
       script,
     }
   } catch (error: any) {
@@ -153,7 +164,7 @@ export const onGeneratePodcastThumbnail = async (prompt: string) => {
     return {
       status: 200,
       message: "Podcast thumbnail generated successfully",
-      thumbnail: (result.url as string) || "",
+      thumbnail: result.url as string,
     }
   } catch (error: any) {
     logError("An error occured", error)

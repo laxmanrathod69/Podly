@@ -1,32 +1,30 @@
-"use client";
+"use client"
 
-import { useEffect, useRef, useState } from "react";
-import { useAudio } from "@/providers/AudioProvider";
+import { useEffect, useRef, useState } from "react"
 
-export const usePlayerControls = () => {
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [duration, setDuration] = useState(1);
-  const [isMuted, setIsMuted] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const { audio } = useAudio();
+export const usePlayerControls = (audio: string | undefined) => {
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [duration, setDuration] = useState(1)
+  const [isMuted, setIsMuted] = useState(false)
+  const [currentTime, setCurrentTime] = useState(0)
 
   const togglePlayPause = () => {
     if (audioRef.current?.paused) {
-      audioRef.current?.play();
-      setIsPlaying(true);
+      audioRef.current?.play()
+      setIsPlaying(true)
     } else {
-      audioRef.current?.pause();
-      setIsPlaying(false);
+      audioRef.current?.pause()
+      setIsPlaying(false)
     }
-  };
+  }
 
   const toggleMute = () => {
     if (audioRef.current) {
-      audioRef.current.muted = !isMuted;
-      setIsMuted((prev) => !prev);
+      audioRef.current.muted = !isMuted
+      setIsMuted((prev) => !prev)
     }
-  };
+  }
 
   const forward = () => {
     if (
@@ -35,71 +33,71 @@ export const usePlayerControls = () => {
       audioRef.current.duration &&
       audioRef.current.currentTime + 5 < audioRef.current.duration
     ) {
-      audioRef.current.currentTime += 5;
+      audioRef.current.currentTime += 5
     }
-  };
+  }
 
   const rewind = () => {
     if (audioRef.current && audioRef.current.currentTime - 5 > 0) {
-      audioRef.current.currentTime -= 5;
+      audioRef.current.currentTime -= 5
     } else if (audioRef.current) {
-      audioRef.current.currentTime = 0;
+      audioRef.current.currentTime = 0
     }
-  };
+  }
 
   useEffect(() => {
     const updateCurrentTime = () => {
       if (audioRef.current) {
-        setCurrentTime(audioRef.current.currentTime);
+        setCurrentTime(audioRef.current.currentTime)
       }
-    };
+    }
 
-    const audioElement = audioRef.current;
+    const audioElement = audioRef.current
     if (audioElement) {
-      audioElement.addEventListener("timeupdate", updateCurrentTime);
+      audioElement.addEventListener("timeupdate", updateCurrentTime)
 
       return () => {
-        audioElement.removeEventListener("timeupdate", updateCurrentTime);
-      };
+        audioElement.removeEventListener("timeupdate", updateCurrentTime)
+      }
     }
-  }, [audioRef, setCurrentTime]);
+  }, [audioRef, setCurrentTime])
 
   useEffect(() => {
-    const audioElement = audioRef.current;
-    if (audio?.audioUrl) {
+    const audioElement = audioRef.current
+    if (audio) {
       if (audioElement) {
         audioElement.play().then(() => {
-          setIsPlaying(true);
-        });
+          setIsPlaying(true)
+        })
       }
     } else {
-      audioElement?.pause();
-      setIsPlaying(true);
+      audioElement?.pause()
+      setIsPlaying(true)
     }
-  }, [audio, audioRef, setIsPlaying]);
+  }, [audio, audioRef, setIsPlaying])
 
   const handleLoadedMetadata = () => {
     if (audioRef.current) {
-      setDuration(audioRef.current.duration);
+      setDuration(audioRef.current.duration)
     }
-  };
+  }
 
   const handleAudioEnded: () => void = () => {
-    setIsPlaying(false);
-  };
+    setIsPlaying(false)
+  }
 
   const handleSeek = (event: React.MouseEvent<HTMLDivElement>) => {
-    const progressBar = event.currentTarget;
+    const progressBar = event.currentTarget
     const clickPosition =
-      event.clientX - progressBar.getBoundingClientRect().left;
-    const percentageClicked = (clickPosition / progressBar.offsetWidth) * 100;
-    const seekTime = (duration * percentageClicked) / 100;
+      event.clientX - progressBar.getBoundingClientRect().left
+    const percentageClicked = (clickPosition / progressBar.offsetWidth) * 100
+    const seekTime = (duration * percentageClicked) / 100
 
     if (audioRef.current) {
-      audioRef.current.currentTime = seekTime;
-      setCurrentTime(seekTime);
+      audioRef.current.currentTime = seekTime
+      setCurrentTime(seekTime)
     }
-  };
+  }
 
   return {
     togglePlayPause,
@@ -114,5 +112,5 @@ export const usePlayerControls = () => {
     isMuted,
     currentTime,
     handleSeek,
-  };
-};
+  }
+}

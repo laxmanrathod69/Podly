@@ -28,14 +28,12 @@ model Podcast {
   voice            String
   audio            String?
   thumbnail        String
-  voiceId          String
-  voiceStyle       String
   author           User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId         String   @db.Uuid
   authorImage      String?
   transcript       String
   imagePrompt      String?
   audioDuration    Int
-  views            Int
+  listeners            Int
   createdAt        DateTime @default(now())
 }
