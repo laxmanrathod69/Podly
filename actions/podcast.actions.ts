@@ -3,12 +3,27 @@
 import prisma from "@/lib/prisma"
 import { generateTextPrompt, generateThumbnailPrompt } from "@/lib/prompt"
 import { cleanScript } from "@/lib/utils"
-
 import { google } from "@ai-sdk/google"
 import { generateText } from "ai"
 
-const logError = (message: string, error: any) => {
+const handleError = (message: string, error: any) => {
   console.error(`${message}: ${JSON.stringify(error)}`)
+  return {
+    status: 500,
+    message: error.message || "Internal Server Error",
+  }
+}
+
+const fetchFromPrisma = async (query: any, errorMessage: string) => {
+  try {
+    const result = await query
+    if (!result) {
+      return { status: 400, message: errorMessage }
+    }
+    return { status: 200, data: result }
+  } catch (error: any) {
+    return handleError(errorMessage, error)
+  }
 }
 
 export const onCreatePodcast = async (data: CreatePodcastData) => {
@@ -43,15 +58,15 @@ export const onCreatePodcast = async (data: CreatePodcastData) => {
       podcastId: podcast.id,
     }
   } catch (error: any) {
-    logError("Error creating podcast", error)
-    return {
-      status: 500,
-      message: error.message || "Internal Server Error while creating podcast",
-    }
+    return handleError("Error creating podcast", error)
   }
 }
 
 export const onGeneratePodcastContent = async (topic: string) => {
+  if (!topic) {
+    return { status: 400, message: "Topic is required" }
+  }
+
   try {
     const { text } = await generateText({
       model: google("gemini-1.5-pro-latest", {
@@ -74,87 +89,78 @@ export const onGeneratePodcastContent = async (topic: string) => {
       }
     }
 
-    const url =
-      "https://realistic-text-to-speech.p.rapidapi.com/v3/generate_voice_over_v2"
+    const encodedParams = new URLSearchParams({
+      voice_code: "en-US-3",
+      text: script,
+      speed: "1.00",
+      pitch: "1.00",
+      output_type: "audio_url",
+    })
+
+    const url = "https://cloudlabs-text-to-speech.p.rapidapi.com/synthesize"
     const options = {
       method: "POST",
       headers: {
         "x-rapidapi-key": process.env.NEXT_PUBLIC_RAPID_API_KEY!,
-        "x-rapidapi-host": "realistic-text-to-speech.p.rapidapi.com",
-        "Content-Type": "application/json",
+        "x-rapidapi-host": "cloudlabs-text-to-speech.p.rapidapi.com",
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: JSON.stringify({
-        voice_obj: {
-          id: 2014,
-          voice_id: "en-US-Neural2-A",
-          gender: "Male",
-          language_code: "en-US",
-          language_name: "US English",
-          voice_name: "John",
-          status: 2,
-          rank: 0,
-          type: "google_tts",
-          isPlaying: false,
-        },
-        json_data: [
-          {
-            block_index: 0,
-            text: script,
-          },
-        ],
-      }),
+      body: encodedParams,
     }
 
-    const audioData = await fetch(url, options)
-    const audio = await audioData.json()
+    const response = await fetch(url, options)
+    const audio = await response.json()
 
-    if (!audioData || !audio[0]?.link) {
+    if (!audio || audio.status !== "success") {
       return {
         status: 400,
-        message: "Failed to generate podcast speech",
+        message: "Failed to generate podcast audio",
       }
     }
 
     return {
       status: 200,
-      message: "Podcast speech generated successfully",
-      audio: audio[0]?.link as string,
+      message: "Podcast audio generated successfully",
+      audio: audio.result.audio_url as string,
       script,
     }
   } catch (error: any) {
-    logError("An error occured while generating podcast audio", error)
-    return {
-      status: 500,
-      message: error.message || "Oops! Something went wrong.",
-    }
+    return handleError(
+      "An error occurred while generating podcast audio",
+      error,
+    )
   }
 }
 
 export const onGeneratePodcastThumbnail = async (prompt: string) => {
-  const url = "https://ai-text-to-image-generator-api.p.rapidapi.com/realistic"
+  if (!prompt) {
+    return {
+      status: 400,
+      message: "Prompt is required",
+    }
+  }
+
+  const url = "https://chatgpt-42.p.rapidapi.com/texttoimage3"
   const options = {
     method: "POST",
     headers: {
       "x-rapidapi-key": process.env.NEXT_PUBLIC_RAPID_API_KEY!,
-      "x-rapidapi-host": "ai-text-to-image-generator-api.p.rapidapi.com",
+      "x-rapidapi-host": "chatgpt-42.p.rapidapi.com",
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      inputs: generateThumbnailPrompt(prompt),
+      text: generateThumbnailPrompt(prompt),
+      width: 1080,
+      height: 1080,
+      steps: 1,
     }),
   }
 
   try {
-    if (!prompt) {
-      return {
-        status: 400,
-        message: "Prompt is required",
-      }
-    }
     const response = await fetch(url, options)
-    const result = await response.json()
+    const data = await response.json()
 
-    if (!result || !result.url) {
+    if (!data?.generated_image) {
       return {
         status: 400,
         message: "Failed to generate podcast thumbnail",
@@ -164,20 +170,19 @@ export const onGeneratePodcastThumbnail = async (prompt: string) => {
     return {
       status: 200,
       message: "Podcast thumbnail generated successfully",
-      thumbnail: result.url as string,
+      thumbnail: data.generated_image as string,
     }
   } catch (error: any) {
-    logError("An error occured", error)
-    return {
-      status: 500,
-      message: error.message || "Oops! Something went wrong.",
-    }
+    return handleError(
+      "An error occurred while generating podcast thumbnail",
+      error,
+    )
   }
 }
 
 export const onGetRecentPodcasts = async () => {
-  try {
-    const podcasts = await prisma.podcast.findMany({
+  return fetchFromPrisma(
+    prisma.podcast.findMany({
       take: 5,
       select: {
         id: true,
@@ -195,25 +200,14 @@ export const onGetRecentPodcasts = async () => {
         voice: true,
       },
       orderBy: { createdAt: "asc" },
-    })
-
-    if (!podcasts || !podcasts.length) {
-      return { status: 400, message: "Failed to fetch recent podcasts" }
-    }
-
-    return { status: 200, data: podcasts }
-  } catch (error: any) {
-    logError("An error occured while fetching recent podcasts", error)
-    return {
-      status: 500,
-      message: error.message || "Oops! Something went wrong.",
-    }
-  }
+    }),
+    "Failed to fetch recent podcasts",
+  )
 }
 
 export const onGetTrendingPodcasts = async () => {
-  try {
-    const podcasts = await prisma.podcast.findMany({
+  return fetchFromPrisma(
+    prisma.podcast.findMany({
       take: 10,
       select: {
         id: true,
@@ -231,20 +225,9 @@ export const onGetTrendingPodcasts = async () => {
         voice: true,
       },
       orderBy: { listeners: "desc" },
-    })
-
-    if (!podcasts || !podcasts.length) {
-      return { status: 400, message: "Failed to fetch trending podcasts" }
-    }
-
-    return { status: 200, data: podcasts }
-  } catch (error: any) {
-    logError("An error occured while fetching trending podcasts", error)
-    return {
-      status: 500,
-      message: error.message || "Oops! Something went wrong.",
-    }
-  }
+    }),
+    "Failed to fetch trending podcasts",
+  )
 }
 
 export const onGetPodcastDetails = async (id: string) => {
@@ -252,8 +235,8 @@ export const onGetPodcastDetails = async (id: string) => {
     return { status: 400, message: "Podcast ID is required" }
   }
 
-  try {
-    const podcast = await prisma.podcast.findUnique({
+  return fetchFromPrisma(
+    prisma.podcast.findUnique({
       where: { id },
       select: {
         id: true,
@@ -270,19 +253,7 @@ export const onGetPodcastDetails = async (id: string) => {
         createdAt: true,
         voice: true,
       },
-    })
-
-    if (!podcast?.id) {
-      return { status: 404, message: "Podcast not found" }
-    }
-
-    return { status: 200, data: podcast }
-  } catch (error: any) {
-    logError("An error occured while fetching podcast details", error)
-    return {
-      status: 500,
-      message:
-        error.message || "Internal Server Error while fetching podcast details",
-    }
-  }
+    }),
+    "Failed to fetch podcast details",
+  )
 }
