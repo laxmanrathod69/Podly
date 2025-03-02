@@ -2,7 +2,7 @@
 
 import { Loader } from "@/components/global/loader"
 import { Button } from "@/components/ui/button"
-import { SIGN_IN_FORM } from "@/constants/forms"
+import { SIGN_IN_FORM } from "@/constants"
 import { useAuthSignIn } from "@/hooks/auth/index"
 import { FormGenerator } from "../form-generator"
 

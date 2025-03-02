@@ -14,53 +14,49 @@ export const onAuthenticatedUser = async () => {
       },
       select: {
         id: true,
-        firstname: true,
-        lastname: true,
+        name: true,
+        podcast: true,
+        monthlyListeners: true,
+        createdAt: true,
       },
     })
 
-    if (user)
+    if (!user?.id)
       return {
-        status: 200,
-        id: user.id,
-        image: clerk.imageUrl, // TODO: make it optional
-        username: `${user.firstname} ${user.lastname}`,
+        status: 404,
+        message: "User not found!",
       }
 
-    return {
-      status: 404,
-      message: "User not found!",
-    }
+    return { status: 200, user: { ...user, image: clerk?.imageUrl } }
   } catch (error: any) {
     return {
-      status: 400,
+      status: 500,
       message: "Oops! Something went wrong. Try again",
     }
   }
 }
 
 export const onSignUpUser = async (user: {
-  firstname: string
-  lastname: string
+  name: string
   clerkId: string
-  image: string
+  image: string | undefined
 }) => {
   try {
     const createdUser = await prisma.user.create({
       data: { ...user, monthlyListeners: 0 },
+      select: { id: true },
     })
 
-    if (createdUser && createdUser.id) {
+    if (!createdUser?.id) {
       return {
-        status: 200,
-        message: "User created",
-        id: createdUser.id,
+        status: 400,
+        message: "User could not be created! Try again",
       }
     }
-
     return {
-      status: 400,
-      message: "User could not be created! Try again",
+      status: 200,
+      message: "User created",
+      id: createdUser.id,
     }
   } catch (error: any) {
     return {
@@ -77,7 +73,7 @@ export const onSignInUser = async (clerkId: string) => {
       select: { id: true },
     })
 
-    if (loggedInUser && loggedInUser.id) {
+    if (loggedInUser?.id) {
       return {
         status: 200,
         message: "User authenticated",

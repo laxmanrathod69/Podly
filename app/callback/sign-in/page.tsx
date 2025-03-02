@@ -4,31 +4,27 @@ import { redirect } from "next/navigation"
 
 const CompleteSignIn = async () => {
   const user = await currentUser()
-  if (!user || !user.id) {
-    redirect("/sign-in")
+  if (!user?.id) {
+    return redirect("/sign-in")
   }
-  // Check if the user exists in the database
-  const authenticated = await onSignInUser(user.id)
-  console.log("authenticated user: " + { authenticated })
-  if (authenticated.status === 400) {
-    // If the user does not exist, create a new user entry in the database
-    const complete = await onSignUpUser({
-      firstname: user.firstName!,
-      lastname: user.lastName!,
-      image: user.imageUrl,
-      clerkId: user.id,
-    })
 
-    if (complete.status === 200) {
-      redirect("/") // Redirect to dashboard
-    } else {
-      redirect("/sign-in")
-    }
-  } else if (authenticated.status === 200) {
-    redirect("/") // Redirect to dashboard
-  } else {
-    redirect("/sign-in")
+  const authenticated = await onSignInUser(user.id)
+
+  if (authenticated.status === 200) {
+    return redirect("/") // Redirect to dashboard
   }
+
+  const signedIn = await onSignUpUser({
+    name: `${user.firstName} ${user.lastName ?? ""}`,
+    clerkId: user.id,
+    image: user?.imageUrl,
+  })
+
+  if (signedIn.status === 200) {
+    return redirect("/") // Redirect to dashboard
+  }
+
+  return redirect("/sign-in")
 }
 
 export default CompleteSignIn
