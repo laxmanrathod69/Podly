@@ -1,0 +1,53 @@
+"use client"
+
+import { sidebarLinks } from "@/constants"
+import { cn } from "@/lib/utils"
+import Image from "next/image"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { usePodcast } from "@/contexts/podcast-context"
+
+const LeftSidebar = () => {
+  const { currentPodcast } = usePodcast()
+  const pathname = usePathname()
+
+  return (
+    <section
+      className={cn("left_sidebar h-[calc(100vh-5px)]", {
+        "h-[calc(100vh-140px)]": !!currentPodcast || null,
+      })}
+    >
+      <nav className="flex flex-col gap-6">
+        <Link
+          href="/"
+          className="flex cursor-pointer items-center gap-1 pb-10 max-lg:justify-center"
+        >
+          <Image src="/icons/logo.svg" width={23} height={27} alt="logo" />
+          <h1 className="text-24 font-extrabold text-white-1 max-lg:hidden">
+            Podly
+          </h1>
+        </Link>
+        {sidebarLinks.map(({ route, label, imgURL }) => {
+          const isActive =
+            pathname === route || pathname.startsWith(`${route}/`)
+
+          return (
+            <Link
+              key={label}
+              href={route}
+              className={cn(
+                "flex gap-3 items-center py-4 max-lg:px-4 justify-center lg:justify-start hover:text-orange-1 transition-all duration-75 ease-in",
+                { "bg-nav-focus border-r-4 border-orange-1": isActive },
+              )}
+            >
+              <Image src={imgURL} alt={label} width={24} height={24} />
+              <p>{label}</p>
+            </Link>
+          )
+        })}
+      </nav>
+    </section>
+  )
+}
+
+export default LeftSidebar
