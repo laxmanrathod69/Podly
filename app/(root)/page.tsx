@@ -9,7 +9,7 @@ const PodcastHomePage = () => {
   const { recentPodcasts } = useRecentPodcasts()
 
   return (
-    <div className="mt-9 flex flex-col gap-9 md:overflow-hidden">
+    <div className="mt-9 max-md:mt-2 flex flex-col gap-9 md:overflow-hidden">
       <section className="flex flex-col gap-8">
         {trendingPodcasts && (
           <div className="flex flex-col gap-3">
@@ -20,24 +20,12 @@ const PodcastHomePage = () => {
               {trendingPodcasts.map((podcast: Podcast) => (
                 <PodcastCard key={podcast.id} podcast={podcast} />
               ))}
-              {trendingPodcasts.map((podcast: Podcast) => (
-                <PodcastCard key={podcast.id} podcast={podcast} />
-              ))}
-              {trendingPodcasts.map((podcast: Podcast) => (
-                <PodcastCard key={podcast.id} podcast={podcast} />
-              ))}
             </div>
           </div>
         )}
         {recentPodcasts && (
           <div className="flex flex-col gap-4">
-            <h1 className="text-20 font-bold text-white-1">Latests Podcasts</h1>
-            {recentPodcasts.map((podcast: Podcast) => (
-              <LatestPodcastCard key={podcast.id} podcast={podcast} />
-            ))}
-            {recentPodcasts.map((podcast: Podcast) => (
-              <LatestPodcastCard key={podcast.id} podcast={podcast} />
-            ))}
+            <h1 className="text-20 font-bold text-white-1">Recent Podcasts</h1>
             {recentPodcasts.map((podcast: Podcast) => (
               <LatestPodcastCard key={podcast.id} podcast={podcast} />
             ))}
@@ -50,12 +38,7 @@ const PodcastHomePage = () => {
               {trendingPodcasts.map((podcast: Podcast) => (
                 <PodcastCard key={podcast.id} podcast={podcast} />
               ))}
-              {trendingPodcasts.map((podcast: Podcast) => (
-                <PodcastCard key={podcast.id} podcast={podcast} />
-              ))}
-              {trendingPodcasts.map((podcast: Podcast) => (
-                <PodcastCard key={podcast.id} podcast={podcast} />
-              ))}
+              {/* TODO: Add popular podcasts */}
             </div>
           </div>
         )}
