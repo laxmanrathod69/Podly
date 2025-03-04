@@ -20,6 +20,9 @@ export const SignInForm = () => {
         />
       ))}
 
+      {/* Clerk CAPTCHA Component */}
+      <div id="clerk-captcha"></div>
+
       <Button
         type="submit"
         className="rounded-lg bg-orange-1 hover:bg-orange-700 transition-all ease-in-out duration-200 h-8"

@@ -2,12 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
-import { useRouter } from "next/navigation"
-import { useSignIn, useSignUp } from "@clerk/nextjs"
+import { redirect, useRouter } from "next/navigation"
+import { useAuth, useClerk, useSignIn, useSignUp } from "@clerk/nextjs"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { OAuthStrategy } from "@clerk/types"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { onSignUpUser } from "@/actions/auth.actions"
 import { SignInSchema } from "@/components/global/auth/forms/sign-in/schema"
 import { SignUpSchema } from "@/components/global/auth/forms/sign-up/schema"
@@ -41,10 +41,11 @@ export const useAuthSignIn = () => {
         await setActive({ session: authenticated.createdSessionId })
         useSuccessToast("Welcome back!")
         router.push("/callback/sign-in")
+      } else {
+        useErrorToast2("Failed to sign in. Please check your credentials.")
       }
     } catch (error: any) {
-      if (error.errors[0].code === "form_password_incorrect")
-        return useErrorToast2("Incorrect email or password, try again.")
+      useErrorToast2("Incorrect email or password, try again.")
     }
   }
 
@@ -172,7 +173,10 @@ export const useGoogleAuth = () => {
   const { signUp, isLoaded: LoadedSignUp } = useSignUp()
 
   const signInWith = (strategy: OAuthStrategy) => {
-    if (!LoadedSignIn) return
+    if (!LoadedSignIn) {
+      useErrorToast2("Oops! something went wrong")
+      redirect("/sign-in")
+    }
     try {
       return signIn.authenticateWithRedirect({
         strategy,
@@ -185,7 +189,10 @@ export const useGoogleAuth = () => {
   }
 
   const signUpWith = (strategy: OAuthStrategy) => {
-    if (!LoadedSignUp) return
+    if (!LoadedSignUp) {
+      useErrorToast2("Oops! Something went wrong")
+      redirect("/sign-up")
+    }
     try {
       return signUp.authenticateWithRedirect({
         strategy,
@@ -198,4 +205,29 @@ export const useGoogleAuth = () => {
   }
 
   return { signUpWith, signInWith }
+}
+
+export const useSignOut = () => {
+  const { signOut } = useClerk()
+  const { sessionId } = useAuth()
+
+  const onSignOutUser = async (sessionId: string) => {
+    try {
+      await signOut({ sessionId })
+      useSuccessToast("You have successfully signed out")
+      redirect("/")
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Oops! something went wrong"
+      useErrorToast2(errorMessage)
+    }
+  }
+
+  useEffect(() => {
+    if (sessionId) {
+      onSignOutUser(sessionId)
+    }
+  }, [sessionId, onSignOutUser])
+
+  return null
 }

@@ -1,11 +1,10 @@
 "use client"
-
-import { Loader } from "@/components/global/loader"
-import { Button } from "@/components/ui/button"
-import { SIGN_UP_FORM } from "@/constants"
-import { useAuthSignUp } from "@/hooks/auth"
 import dynamic from "next/dynamic"
+import { useAuthSignUp } from "@/hooks/auth"
+import { SIGN_UP_FORM } from "@/constants"
 import { FormGenerator } from "../form-generator"
+import { Button } from "@/components/ui/button"
+import { Loader } from "@/components/global/loader"
 
 const OtpInput = dynamic(
   () =>
@@ -33,7 +32,6 @@ export const SignUpForm = () => {
       onSubmit={onInitiateUserRegistration}
       className="flex flex-col gap-3 mt-7"
     >
-      <div id="clerk-captcha"></div> {/* TODO: Adjust Clerk captcha */}
       {verifying ? (
         <div className="flex justify-center mb-5 text-white-1">
           <OtpInput otp={code} setOtp={setCode} />
@@ -48,6 +46,7 @@ export const SignUpForm = () => {
           />
         ))
       )}
+      <div id="clerk-captcha" className="mb-5"></div>
       {verifying ? (
         <Button
           type="submit"

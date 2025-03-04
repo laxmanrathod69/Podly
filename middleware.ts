@@ -3,13 +3,18 @@ import { NextResponse } from "next/server"
 
 const isProtectedRoute = createRouteMatcher(["/podcast(.*)", "/user(.*)"])
 
-export default clerkMiddleware(async (auth, req) => {
+export default clerkMiddleware(async (Auth, req) => {
   const baseHost = "localhost:3000"
   const host = req.headers.get("host")
   const reqPath = req.nextUrl.pathname
   const origin = req.nextUrl.origin
-
-  if (isProtectedRoute(req)) auth.protect()
+  const auth = await Auth()
+  if (isProtectedRoute(req)) {
+    // If the user is not authenticated, redirect them to the sign-in page
+    if (!auth.userId) {
+      return NextResponse.redirect(new URL("/sign-in", origin))
+    }
+  }
 
   if (!baseHost.includes(host as string) && reqPath.includes("/podcast")) {
     const response = await fetch(`${origin}/api/domain?host=${host}`, {
@@ -26,6 +31,8 @@ export default clerkMiddleware(async (auth, req) => {
       )
     }
   }
+
+  return NextResponse.next()
 })
 
 export const config = {

@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
 import { Manrope } from "next/font/google"
-import { Toaster } from "sonner"
-import { ThemeProvider } from "@/components/theme"
-import { ReactQueryProvider } from "@/react-query/provider"
 import { ClerkProvider } from "@clerk/nextjs"
-import "./globals.css"
+import { Toaster } from "sonner"
+import { ReactQueryProvider } from "@/react-query/provider"
 import { PodcastProvider } from "@/contexts/podcast-context"
+import { ThemeProvider } from "@/components/theme"
+import "./globals.css"
 
 const manrope = Manrope({ subsets: ["latin"] })
 

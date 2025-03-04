@@ -64,7 +64,7 @@ const MobileNav = ({ user }: { user: User }) => {
           <div className="flex items-center gap-3 absolute bottom-4 left-4">
             <div className="glassmorphism-black p-[0.20rem] w-fit rounded-full">
               <Image
-                src={user.image!}
+                src={user.image || "/icons/profile.svg"}
                 alt={user.name}
                 width={45}
                 height={45}
