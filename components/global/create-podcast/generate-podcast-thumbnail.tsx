@@ -6,23 +6,23 @@ import { cn } from "@/lib/utils"
 import { Label } from "../../ui/label"
 import { Textarea } from "../../ui/textarea"
 import { Loader, Loader2 } from "lucide-react"
-import { GenerateThumbnailProps } from "@/types"
 import { Input } from "../../ui/input"
 import Image from "next/image"
 import { toast } from "sonner"
 import { useGeneratePodcastThumbnail } from "@/hooks/podcast/generate-podcast-thumbnail"
+import { ThumbnailGenerateProps } from "@/types/indexx"
 
 const GenerateThumbnail = ({
   thumbnail,
   setThumbnail,
   imagePrompt,
   setImagePrompt,
-}: GenerateThumbnailProps) => {
+}: ThumbnailGenerateProps) => {
   const [isAiThumbnail, setIsAiThumbnail] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const imageRef = useRef<HTMLInputElement>(null)
 
-  const { generatePodcastThumbnail, isGeneratingThumbnail, thumbnail_url } =
+  const { thumbnail_url, isPending, generateThumbnail } =
     useGeneratePodcastThumbnail()
 
   if (thumbnail_url) setThumbnail(thumbnail_url)
@@ -57,7 +57,6 @@ const GenerateThumbnail = ({
       <div className="generate_thumbnail">
         <Button
           type="button"
-          variant="plain"
           onClick={() => setIsAiThumbnail(true)}
           className={cn("", { "bg-black-6": isAiThumbnail })}
         >
@@ -65,7 +64,6 @@ const GenerateThumbnail = ({
         </Button>
         <Button
           type="button"
-          variant="plain"
           onClick={() => setIsAiThumbnail(false)}
           className={cn("", { "bg-black-6": !isAiThumbnail })}
         >
@@ -81,9 +79,9 @@ const GenerateThumbnail = ({
             </Label>
             <Textarea
               className="input-class font-light focus-visible:ring-offset-orange-1"
-              placeholder="Provide text to generate thumbnail"
+              placeholder="Your answer here..."
               rows={5}
-              value={imagePrompt || ""}
+              value={imagePrompt ?? undefined}
               onChange={(e) => setImagePrompt(e.target.value)}
             />
           </div>
@@ -91,14 +89,13 @@ const GenerateThumbnail = ({
             <Button
               type="submit"
               className="text-16 bg-orange-1 py-4 font-bold text-white-1 hover:bg-orange-600 transition-all ease-in-out duration-200"
-              disabled={isGeneratingThumbnail || !imagePrompt}
+              disabled={isPending || !imagePrompt || !!thumbnail}
               onClick={(e) => {
                 e.preventDefault()
-                !isGeneratingThumbnail &&
-                  generatePodcastThumbnail(imagePrompt || "")
+                !isPending && generateThumbnail(imagePrompt!)
               }}
             >
-              {isGeneratingThumbnail ? (
+              {isPending ? (
                 <>
                   <Loader2 size={16} className="animate-spin mr-2" />
                   Generating..

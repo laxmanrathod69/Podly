@@ -11,7 +11,6 @@ import { useSelectVoiceType } from "@/hooks/ai-voices"
 import { SelectAiVoice } from "@/components/global/create-podcast/select-ai-voice-field"
 import { TitleField } from "@/components/global/create-podcast/title-field"
 import { DescriptionField } from "@/components/global/create-podcast/description-field"
-import { toast } from "sonner"
 import { podcastFormSchema, PodcastFormValues } from "@/hooks/podcast/schema"
 import { z } from "zod"
 import { GeneratePodcastContent } from "@/components/global/create-podcast/generate-podcast-content"
@@ -19,27 +18,21 @@ import { useCreatePodcast } from "@/hooks/podcast/create-podcast/intex"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { onAuthenticatedUser } from "@/actions/auth.actions"
+import { useErrorToast2 } from "@/hooks/toasts"
 
 const CreatePodcast = () => {
-  const [userId, setUserId] = useState<string>("")
-  const [userImage, setUserImage] = useState<string | null>("")
-  const [audio, setAudio] = useState<string | null>("")
-  const [audioDuration, setAudioDuration] = useState<number>(0)
-  const [thumbnail, setThumbnail] = useState<string>("")
-  const [imagePrompt, setImagePrompt] = useState<string | null>("")
+  const [user, setUser] = useState<User | null>(null)
+  const [audio, setAudio] = useState<string | null>(null)
+  const [thumbnail, setThumbnail] = useState<string | undefined>("")
+  const [imagePrompt, setImagePrompt] = useState<string | null>(null)
   const [transcript, setTranscript] = useState<string>("")
-  const [views, setViews] = useState<number>(0)
+  const [audioDuration, setAudioDuration] = useState<string>("")
+  const [listeners, setListeners] = useState<number>(2000)
 
-  const {
-    currentVoice,
-    setCurrentVoice,
-    voiceId,
-    voicePrompt,
-    setVoicePrompt,
-    voiceStyle,
-  } = useSelectVoiceType()
+  const { currentVoice, setCurrentVoice, voicePrompt, setVoicePrompt } =
+    useSelectVoiceType()
 
-  const { createPodcast, isCreating } = useCreatePodcast()
+  const { createPodcast, isPending } = useCreatePodcast()
 
   const form = useForm<PodcastFormValues>({
     resolver: zodResolver(podcastFormSchema),
@@ -56,24 +49,20 @@ const CreatePodcast = () => {
       !audio ||
       !currentVoice
     ) {
-      return toast.error("Error", { description: "Missing required fields" })
+      return useErrorToast2("Missing required fields")
     }
 
-    if (!isCreating) {
+    if (!isPending) {
       createPodcast({
         title: data.podcastTitle,
         description: data.podcastDescription,
         voice: currentVoice,
         audio,
-        thumbnail,
-        voiceId,
-        voiceStyle,
-        authorId: userId,
-        authorImage: userImage,
+        thumbnail: thumbnail || "/images/default-podcast-banner.jpg",
         transcript,
-        imagePrompt,
+        user_id: user?.id!,
         audioDuration,
-        views,
+        listeners,
       })
 
       form.reset()
@@ -86,13 +75,14 @@ const CreatePodcast = () => {
 
   useEffect(() => {
     const getUserDetails = async () => {
-      const user = await onAuthenticatedUser()
-      if (user.status === 200) {
-        setUserId(user.id!)
-        setUserImage(user?.image ?? null)
-      }
+      const { user } = await onAuthenticatedUser()
+      setUser((user as User) ?? null)
     }
     getUserDetails()
+
+    return () => {
+      setUser(null)
+    }
   }, [])
 
   return (
@@ -132,13 +122,13 @@ const CreatePodcast = () => {
             <div className="mt-10 w-full">
               <Button
                 type="submit"
-                disabled={isCreating}
+                disabled={isPending}
                 className={cn(
                   "text-16 w-full bg-orange-1 py-4 font-extrabold text-white-1 transition-all duration-500 hover:bg-black-1 hover:border border-orange-1",
-                  isCreating && "cursor-not-allowed",
+                  isPending && "cursor-not-allowed",
                 )}
               >
-                {isCreating ? (
+                {isPending ? (
                   <>
                     <Loader2 size={16} className="animate-spin mr-2" />
                     Submitting..

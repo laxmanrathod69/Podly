@@ -8,47 +8,46 @@ import { useQuery } from "@tanstack/react-query"
 import { useDismissToast, useErrorToast, useLoadingToast } from "../toasts"
 import { handleApiResponse } from "../podcast/handle-api-response"
 
-export const useTrendingPodcasts = () => {
+const usePodcastQuery = (
+  queryKey: string[],
+  queryFn: () => Promise<any>,
+  loadingMessage: string,
+) => {
   const { data, isLoading, isError, error, isFetched } = useQuery({
-    queryKey: ["trending-podcasts"],
-    queryFn: onGetTrendingPodcasts,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    // cacheTime: 1000 * 60 * 10, // TODO: Keep data in cache for 10 minutes
-    retry: 2, // Retry failed requests up to 2 times
-    refetchOnWindowFocus: false, // Prevent refetch when switching tabs
+    queryKey,
+    queryFn,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
+    retry: 2,
+    refetchOnWindowFocus: false,
   })
 
-  if (isLoading)
-    useLoadingToast("Loading trending podcasts...", "trending-loading")
+  if (isLoading) useLoadingToast(loadingMessage, `${queryKey[0]}-loading`)
 
-  if (isFetched) useDismissToast("trending-loading")
+  if (isFetched) useDismissToast(`${queryKey[0]}-loading`)
 
   if (isError) {
-    useDismissToast("trending-loading")
+    useDismissToast(`${queryKey[0]}-loading`)
     useErrorToast(error)
   }
 
-  return { trendingPodcasts: handleApiResponse(data) }
+  return { data: handleApiResponse(data) }
+}
+
+export const useTrendingPodcasts = () => {
+  const { data: trendingPodcasts } = usePodcastQuery(
+    ["trending-podcasts"],
+    onGetTrendingPodcasts,
+    "Loading trending podcasts...",
+  )
+  return { trendingPodcasts }
 }
 
 export const useRecentPodcasts = () => {
-  const { data, isLoading, isError, error, isFetched } = useQuery({
-    queryKey: ["recent-podcasts"],
-    queryFn: onGetRecentPodcasts,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    // cacheTime: 1000 * 60 * 10, // TODO: Keep data in cache for 10 minutes
-    retry: 2, // Retry failed requests up to 2 times
-    refetchOnWindowFocus: false, // Prevent refetch when switching tabs
-  })
-
-  if (isLoading) useLoadingToast("Loading recent podcasts...", "recent-loading")
-
-  if (isFetched) useDismissToast("recent-loading")
-
-  if (isError) {
-    useDismissToast("recent-loading")
-    useErrorToast(error)
-  }
-
-  return { recentPodcasts: handleApiResponse(data) }
+  const { data: recentPodcasts } = usePodcastQuery(
+    ["recent-podcasts"],
+    onGetRecentPodcasts,
+    "Loading recent podcasts...",
+  )
+  return { recentPodcasts }
 }

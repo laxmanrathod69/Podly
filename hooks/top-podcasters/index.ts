@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import {
   onGetPopularPodcasters,
   onGetTopPodcasters,
@@ -7,40 +8,64 @@ import {
 import { useQuery } from "@tanstack/react-query"
 
 export const useTopPodcasters = () => {
-  const { data: topPodcasters, isPending } = useQuery({
-    queryKey: ["top-podcasters"],
-    queryFn: onGetTopPodcasters,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    retry: 2, // Retry failed requests up to 2 times
-    refetchOnWindowFocus: true, // Refetch when switching tabs
-  })
+  const queryOptions = useMemo(
+    () => ({
+      queryKey: ["top-podcasters"],
+      queryFn: onGetTopPodcasters,
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 10,
+      retry: 2,
+      refetchOnWindowFocus: false,
+    }),
+    [],
+  )
 
-  if (topPodcasters?.status !== 200) {
-    return { status: 404, message: "No top podcasters found" }
-  }
+  const { data: topPodcasters, isPending, error } = useQuery(queryOptions)
 
-  return {
-    topPodcasters: "data" in topPodcasters ? topPodcasters.data : [],
-    isPending,
-  }
+  const result = useMemo(() => {
+    if (error || topPodcasters?.status !== 200) {
+      return { topPodcasters: null, isPending: false }
+    }
+
+    return {
+      topPodcasters: "data" in topPodcasters ? topPodcasters?.data : null,
+      isPending,
+    }
+  }, [topPodcasters, isPending, error])
+
+  return result
 }
 
 export const usePopularPodcasters = () => {
-  const { data: popularPodcasters, isPending: isLoading } = useQuery({
-    queryKey: ["popular-podcasters"],
-    queryFn: onGetPopularPodcasters,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    retry: 2, // Retry failed requests up to 2 times
-    refetchOnWindowFocus: true, // Refetch when switching tabs
-  })
+  const queryOptions = useMemo(
+    () => ({
+      queryKey: ["popular-podcasters"],
+      queryFn: onGetPopularPodcasters,
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 10,
+      retry: 2,
+      refetchOnWindowFocus: false,
+    }),
+    [],
+  )
 
-  if (popularPodcasters?.status !== 200) {
-    return { status: 404, message: "No popular podcasters found" }
-  }
+  const {
+    data: popularPodcasters,
+    isPending: isLoading,
+    error,
+  } = useQuery(queryOptions)
 
-  return {
-    popularPodcasters:
-      "data" in popularPodcasters ? popularPodcasters.data : [],
-    isLoading,
-  }
+  const result = useMemo(() => {
+    if (error || popularPodcasters?.status !== 200) {
+      return { popularPodcasters: null, isLoading: false }
+    }
+
+    return {
+      popularPodcasters:
+        "data" in popularPodcasters ? popularPodcasters.data : [],
+      isLoading,
+    }
+  }, [popularPodcasters, isLoading, error])
+
+  return result
 }

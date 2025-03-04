@@ -1,29 +1,26 @@
+"use client"
+
 import { onCreatePodcast } from "@/actions/podcast.actions"
+import { useErrorToast2, useSuccessToast } from "@/hooks/toasts"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { toast } from "sonner"
 
 export const useCreatePodcast = () => {
   const router = useRouter()
   const client = useQueryClient()
 
-  const { mutate: createPodcast, isPending: isCreating } = useMutation({
-    mutationFn: (data: CreatePodcastData) => onCreatePodcast(data),
-    onSuccess: (res) => {
-      toast(res.status !== 200 ? "Error" : "Success", {
-        description: res.message,
-      })
-      return router.push("/")
+  const { mutate: createPodcast, isPending } = useMutation({
+    mutationFn: (data: Podcast) => onCreatePodcast(data),
+    onSuccess(res) {
+      const podcastId = "podcastId" in res ? res.podcastId : ""
+      useSuccessToast(res.message)
+      podcastId ? router.push(`/podcast/${podcastId}`) : null
     },
-    onError: (err) => {
-      return toast("Error", {
-        description: err.message || "An error occurred",
-      })
-    },
+    onError: (err) => useErrorToast2(err.message),
     onSettled: async () => {
       return await client.invalidateQueries({ queryKey: ["podcasts"] })
     },
   })
 
-  return { createPodcast, isCreating }
+  return { createPodcast, isPending }
 }

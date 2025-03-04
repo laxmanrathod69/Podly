@@ -1,17 +1,20 @@
-import { GeneratePodcastContentProps } from "@/types"
 import { Label } from "../../ui/label"
 import { Textarea } from "../../ui/textarea"
 import { Button } from "../../ui/button"
 import { Loader2 } from "lucide-react"
 import { useGeneratePodcastContent } from "@/hooks/podcast/generate-podcast-content"
+import { GeneratePodcastContentProps } from "@/types/indexx"
+import { formatTime } from "@/lib/formatTime"
 
 export const GeneratePodcastContent = (props: GeneratePodcastContentProps) => {
   const { generatePodcastContent, isGenerating, podcastContent } =
     useGeneratePodcastContent()
 
-  if (podcastContent) {
-    props.setAudio(podcastContent?.audio || "")
-    props.setTranscript(podcastContent?.script || "")
+  if (podcastContent?.status === 200) {
+    if ("audio" in podcastContent) {
+      props.setAudio(podcastContent.audio)
+      props.setTranscript(podcastContent.script || "")
+    }
   }
 
   return (
@@ -34,7 +37,7 @@ export const GeneratePodcastContent = (props: GeneratePodcastContentProps) => {
       <div className="mt-5 w-full max-w-[200px]">
         <Button
           type="button"
-          disabled={isGenerating || !props.voicePrompt}
+          disabled={isGenerating || !props.voicePrompt || !!props?.audio}
           className="text-16 bg-orange-1 py-4 font-bold text-white-1 hover:bg-orange-600 transition-all ease-in-out duration-200"
           onClick={(e) => {
             e.preventDefault()
@@ -51,13 +54,13 @@ export const GeneratePodcastContent = (props: GeneratePodcastContentProps) => {
           )}
         </Button>
       </div>
-      {props.audio && (
+      {props?.audio && (
         <audio
-          src={props.audio}
+          src={props?.audio}
           controls
           className="mt-5"
           onLoadedMetadata={(e) =>
-            props.setAudioDuration(e.currentTarget.duration)
+            props.setAudioDuration(formatTime(e.currentTarget.duration))
           }
         />
       )}

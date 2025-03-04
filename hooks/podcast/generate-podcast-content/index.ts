@@ -18,9 +18,7 @@ export const useGeneratePodcastContent = () => {
       })
     },
     onError: (err) => {
-      return toast("Error", {
-        description: err.message || "An error occurred",
-      })
+      return toast("Error", { description: err.message })
     },
     onSettled: async () => {
       return await client.invalidateQueries({ queryKey: ["podcasts"] })

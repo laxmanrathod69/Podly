@@ -10,8 +10,10 @@ export const usePodcastDetails = (podcastId: string) => {
     queryKey: ["podcast-details", podcastId],
     queryFn: () => onGetPodcastDetails(podcastId),
     staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
+    enabled: !!podcastId,
   })
 
   if (isLoading) useLoadingToast("Please wait, loading podcast...", podcastId)

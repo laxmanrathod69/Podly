@@ -7,6 +7,7 @@ const PodcastContext = createContext<PodcastContextType | null>(null)
 
 export const PodcastProvider = ({ children }: ChildrenProp) => {
   const [currentPodcast, setCurrentPodcast] = useState<string>("")
+
   const playPodcast = (podcastId: string) => {
     setCurrentPodcast(podcastId)
   }

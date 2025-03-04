@@ -14,6 +14,10 @@ export const supabaseClient = createClient(
 export const cleanScript = (script: string) => {
   const cleanedScript = script
     .replace(/<[^>]*>/g, "") // Remove HTML tags
-    .replace(/[^\w\s.,!?'"\-:()]/g, "") // Remove unwanted symbols except common punctuation
+    .replace(/\([^)]*\)/g, "") // Remove text inside parentheses
+    .replace(/Host*/g, "") // Remove 'Host: ' string
+    .replace(/[^\w\s.,!?'"\-]/g, "") // Remove unwanted symbols except common punctuation
+    .replace(/\s+/g, " ") // Replace multiple spaces with a single space
+    .trim() // Remove leading and trailing spaces
   return cleanedScript
 }
