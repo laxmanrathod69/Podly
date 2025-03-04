@@ -1,15 +1,16 @@
 <div align="center">
   <br />
     <a href="https://podly-rose.vercel.app" target="_blank">
-      <img src="https://github.com/laxman-rathod/Podly/blob/main/public/banner/podly_banner_image.png" alt="Project Banner">
+      <img src="https://github.com/laxmanrathod69/Podly/blob/main/public/banner/podly_banner_image.png" alt="Project Banner">
     </a>
   <br />
   <div>
     <img src="https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="nextdotjs" />
-    <img src="https://camo.githubusercontent.com/b351bf848730014b4a1d399b523d60c1dd581b0a95ef89c66caa25e9dbc8b02d/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f2d4f70656e41492d626c61636b3f7374796c653d666f722d7468652d6261646765266c6f676f436f6c6f723d7768697465266c6f676f3d6f70656e616926636f6c6f723d343132393931" alt="openai" />
     <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="typescript" />
     <img src="https://img.shields.io/badge/tailwindcss-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="tailwindcss" />
-    <img src="https://img.shields.io/badge/Convex-F02E65?style=for-the-badge&logo=Convex&logoColor=white" alt="convex" />
+    <img src="https://shields.io/badge/supabase-black?logo=supabase&style=for-the-badge" alt="supabase" />
+    <img src="https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white" alt="prisma" />
+  
   </div>
   <h3 align="center">Podly - Where Every Voice Finds Its Audience</h3>
 
@@ -39,43 +40,33 @@ Podly revolutionizes the way people interact with podcasts by integrating cuttin
 
 ## ⚙️ Tech Stack
 
-- Next.js 14
+- Next.js 15
 - React.js
 - TypeScript
 - Tailwind CSS
-- Convex (Backend as a Service)
-- VercelAI (Seamless ai integration with nextjs)
-- Gemini (NLP for AI Podcast generator)
-- OpenAI (Text to Image generation)
-- RapidAPI (built-in API endpoints for faster development)
-- React Hook Form (Form Management)
-- Zod (Input Validation)
-- ShadCN (Components library)
+- ShadCN UI
+- React Query
+- PostgreSQL (Supabase)
+- Prisma ORM
+- VercelAI + Gemini + Unsplash (AI-powered content generation)
+- React Hook Form + Zod (Form validation)
+- Husky + Lint-staged (Code quality)
 
 ## 🤖 Key AI-powered features include
 
 1. **AI-Assisted Podcast Creation**: Simplify the podcast creation process with AI tools that help with content ideation, script generation, and even voice synthesis for those who prefer not to record themselves.
 
-2. **Intelligent Playback**: Our AI analyzes podcast content to provide smart chapter markers, transcriptions, and content summaries, allowing listeners to navigate and consume content more efficiently.
-
-3. **AI-Generated Thumbnails**: Automatically create eye-catching podcast thumbnails based on episode content, saving time for creators and improving visual appeal for listeners.
-
-4. **Personalized Recommendations**: Our advanced AI algorithm learns from user preferences and listening habits to suggest new podcasts and episodes tailored to individual tastes.
-
-5. **Smart Content Moderation**: AI-powered moderation tools help maintain a safe and respectful community by flagging inappropriate content and ensuring compliance with platform guidelines.
+2. **AI-Generated Thumbnails**: Automatically create eye-catching podcast thumbnails based on episode content, saving time for creators and improving visual appeal for listeners.
 
 ## 🕸️ Features
 
 - AI-assisted podcast creation and editing
-- Intelligent podcast search and discovery
 - AI-generated thumbnails and artwork
-- Personalized recommendations powered by machine learning
-- Smart playback with AI-generated chapters and summaries
 - User profiles and preference learning
-- Playlist creation and management
-- Cross-device synchronization
-- Social sharing and community features
-- Content moderation and safety tools
+- Global search and filtering
+- Similar podcast recommendations
+- Optimistic UI updates and prefetching
+- Optimized performance with data caching
 
 ## 🤸 Getting Started
 
@@ -87,76 +78,70 @@ Make sure you have the following installed on your machine:
 
 - [Git](https://git-scm.com/) - for version control
 - [Node.js](https://nodejs.org/en/) - for running JavaScript on the server
-- [npm](https://www.npmjs.com/) - Node Package Manager
+- [pnpm](https://www.pnpm.io/) - for package management
 
 1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/laxman-rathod/Podly.git
+git clone https://github.com/[user-username]/Podly.git
 ```
 
 2. **Install dependencies:**
 
 ```bash
-npm install
+pnpm install
 
 ```
 
 3. **Set up environment variables:**
 
-Create a `.env.local` file in the root directory and add the necessary environment variables (refer to `.env.example` for required variables).
+Create a `.env` file in the root directory and add the necessary environment variables (refer to `.env.example` for required variables).
 
-```js
+```ts
+// Clerk
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = ""
+CLERK_SECRET_KEY = ""
+NEXT_PUBLIC_CLERK_SIGN_IN_URL = "/sign-in"
+NEXT_PUBLIC_CLERK_SIGN_UP_URL = "/sign-up"
 
-CONVEX_DEPLOYMENT=<your-convex-deployment>
+// Google text content generator
+GOOGLE_GENERATIVE_AI_API_KEY = ""
 
-NEXT_PUBLIC_CONVEX_URL=<your-convex-public-url>
+// Unsplash API Key
+UNSPLASH_API_KEY = ""
 
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=<your-clerk-publishable-key>
+// Supabase
+NEXT_PUBLIC_SUPABASE_URL = ""
+NEXT_PUBLIC_SUPABASE_ANON_KEY = ""
 
-CLERK_SECRET_KEY=<your-clerk-secret-key>
+// Connect to Supabase via connection pooling with Supavisor.
+DATABASE_URL = ""
 
-CLERK_WEBHOOK_SECRET=<your-clerk-webhook-secret>
-
-NEXT_PUBLIC_CLERK_SIGN_IN_URL='/sign-in'
-
-NEXT_PUBLIC_CLERK_SIGN_UP_URL='/sign-up'
-
-RAPIDAPI_KEY=<your-rapidapi-key>
-
-RAPIDAPI_IMG_HOST=<your-rapidapi-image-generation-host-name>
-
-RAPIDAPI_IMG_URL=<your-rapidapi-image-generation-url-endpoint>
-
+// Direct connection to the database. Used for migrations.
+DIRECT_URL = ""
 ```
 
-Replace the placeholder values with your actual respective account credentials. You can obtain these credentials by signing up on the [Convex](https://convex.dev/), [Clerk](https://clerk.com/) and [Rapidapi](https://rapidapi.com/)
+Replace the placeholder values with your actual respective account credentials.
 
 4. **Run the development server:**
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 5. Open your browser and navigate to `http://localhost:3000`
 
 ## 🪴 Usage
 
-1. **Create a Podcast**: Click on `Create` and use our AI-assisted tools to generate ideas, write scripts, or even synthesize voices for your podcast.
+- **Create a Podcast**: Click on `Create` and use our AI-assisted tools to generate ideas, write scripts, or even synthesize voices for your podcast.
 
-2. **Discover New Content**: Explore our AI-curated recommendations or use the smart search feature to find podcasts that match your interests.
-
-3. **Enhance Your Listening**: Enjoy smart playback features like AI-generated chapters and summaries to navigate content easily.
-
-4. **Engage with the Community**: Share your favorite podcasts, create playlists, and interact with other podcast enthusiasts.
-
-5. **Manage Your Content**: For creators, use our AI tools to generate thumbnails, moderate comments, and analyze listener engagement.
+- **Discover New Content**: Explore our AI-curated recommendations or use the smart search feature to find podcasts that match your interests.
 
 ## 📂 Project Structure
 
 - `app/`: Next.js app router and page components
 - `components/`: Reusable React components
-- `convex/`: Convex backend services
+- `prisma/`: Prisma schema and migrations
 - `constants/`: Application-wide constants
 - `public/`: Static assets
 - `hooks/`: React custom hooks
@@ -189,6 +174,6 @@ This project is licensed under the Apache License - see the [LICENSE](LICENSE) f
 
 ## 📩 Contact
 
-Laxman Rathod - [@Linkedin](https://linkedin.com/in/laxmanrathod1) - laxmanrathod.dev@gmail.com
+Laxman Rathod - [@Linkedin](https://linkedin.com/in/laxmanrathod69) - laxmanrathod.dev@gmail.com
 
-Project Link: [https://github.com/laxman-rathod/Podly](https://github.com/laxman-rathod/podly)
+Project Link: [https://github.com/laxmanrathod69/Podly](https://github.com/laxmanrathod69/podly)
