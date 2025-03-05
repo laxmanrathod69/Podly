@@ -1,71 +1,60 @@
 "use client"
 
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import {
   onGetPopularPodcasters,
   onGetTopPodcasters,
 } from "@/actions/user.actions"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, keepPreviousData } from "@tanstack/react-query"
+import { useErrorToast } from "../toasts"
 
 export const useTopPodcasters = () => {
-  const queryOptions = useMemo(
-    () => ({
-      queryKey: ["top-podcasters"],
-      queryFn: onGetTopPodcasters,
-      staleTime: 1000 * 60 * 5,
-      gcTime: 1000 * 60 * 10,
-      retry: 2,
-      refetchOnWindowFocus: false,
-    }),
-    [],
-  )
+  const queryKey = useMemo(() => ["top-podcasters"], [])
+  const queryFn = useCallback(() => onGetTopPodcasters(), [])
 
-  const { data: topPodcasters, isPending, error } = useQuery(queryOptions)
+  const { data, isLoading, error } = useQuery({
+    queryKey,
+    queryFn,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 2,
+  })
 
-  const result = useMemo(() => {
-    if (error || topPodcasters?.status !== 200) {
-      return { topPodcasters: null, isPending: false }
-    }
+  if (error) {
+    useErrorToast(error)
+  }
 
-    return {
-      topPodcasters: "data" in topPodcasters ? topPodcasters?.data : null,
-      isPending,
-    }
-  }, [topPodcasters, isPending, error])
+  if (data?.status !== 200) {
+    return { topPodcasters: null, isLoading, error }
+  }
 
-  return result
+  return { topPodcasters: data.data as User[], isLoading, error: null }
 }
 
 export const usePopularPodcasters = () => {
-  const queryOptions = useMemo(
-    () => ({
-      queryKey: ["popular-podcasters"],
-      queryFn: onGetPopularPodcasters,
-      staleTime: 1000 * 60 * 5,
-      gcTime: 1000 * 60 * 10,
-      retry: 2,
-      refetchOnWindowFocus: false,
-    }),
-    [],
-  )
+  const queryKey = useMemo(() => ["popular-podcasters"], [])
+  const queryFn = useCallback(() => onGetPopularPodcasters(), [])
+  const { data, isLoading, error } = useQuery({
+    queryKey,
+    queryFn,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 2,
+  })
 
-  const {
-    data: popularPodcasters,
-    isPending: isLoading,
-    error,
-  } = useQuery(queryOptions)
+  if (error) {
+    useErrorToast(error)
+  }
 
-  const result = useMemo(() => {
-    if (error || popularPodcasters?.status !== 200) {
-      return { popularPodcasters: null, isLoading: false }
-    }
+  if (data?.status !== 200) {
+    return { popularPodcasters: null, isLoading, error }
+  }
 
-    return {
-      popularPodcasters:
-        "data" in popularPodcasters ? popularPodcasters.data : [],
-      isLoading,
-    }
-  }, [popularPodcasters, isLoading, error])
-
-  return result
+  return { popularPodcasters: data.data as User[], isLoading, error: null }
 }

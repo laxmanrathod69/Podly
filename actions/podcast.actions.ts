@@ -1,34 +1,32 @@
 "use server"
 
 import prisma from "@/lib/prisma"
-import { generateTextPrompt, generateThumbnailPrompt } from "@/lib/prompt"
+import { generateTextPrompt } from "@/lib/prompt"
 import { cleanScript } from "@/lib/utils"
 import { google } from "@ai-sdk/google"
 import { generateText } from "ai"
+import { createClient } from "pexels"
+import { errorHandle, errorResponse } from "./db-error-handle"
 
-const handleError = (message: string, error: any) => {
-  console.error(`${message}: ${JSON.stringify(error)}`)
-  return {
-    status: 500,
-    message: error.message || "Internal Server Error",
-  }
-}
-
-const fetchFromPrisma = async (query: any, errorMessage: string) => {
+const fetchFromPrisma = async (
+  query: any,
+  successMessage: string,
+  errorMessage: string,
+) => {
   try {
     const result = await query
     if (!result) {
-      return { status: 400, message: errorMessage }
+      return errorResponse(404, errorMessage)
     }
-    return { status: 200, data: result }
-  } catch (error: any) {
-    return handleError(errorMessage, error)
+    return { status: 200, data: result, message: successMessage }
+  } catch (error) {
+    return errorHandle(error)
   }
 }
 
-export const onCreatePodcast = async (data: CreatePodcastData) => {
+export const onCreatePodcast = async (data: Podcast) => {
   if (!data || Object.keys(data).length === 0) {
-    return { status: 400, message: "Invalid podcast data provided" }
+    return errorResponse(400, "Data is required")
   }
 
   try {
@@ -38,9 +36,8 @@ export const onCreatePodcast = async (data: CreatePodcastData) => {
         description: data.description,
         voice: data.voice,
         audio: data.audio,
-        thumbnail: data.thumbnail,
-        authorId: data.author.id,
-        authorImage: data.author.image,
+        thumbnail: data.thumbnail!,
+        user: { connect: { id: data.user_id } },
         transcript: data.transcript,
         audioDuration: data.audioDuration,
         listeners: data.listeners,
@@ -49,22 +46,22 @@ export const onCreatePodcast = async (data: CreatePodcastData) => {
     })
 
     if (!podcast?.id) {
-      return { status: 400, message: "Failed to create podcast" }
+      return errorResponse(400, "Failed to create podcast")
     }
 
     return {
       status: 201,
+      id: podcast.id,
       message: "Podcast created successfully",
-      podcastId: podcast.id,
     }
-  } catch (error: any) {
-    return handleError("Error creating podcast", error)
+  } catch (error) {
+    return errorHandle(error)
   }
 }
 
 export const onGeneratePodcastContent = async (topic: string) => {
   if (!topic) {
-    return { status: 400, message: "Topic is required" }
+    return errorResponse(400, "Topic is required")
   }
 
   try {
@@ -83,10 +80,7 @@ export const onGeneratePodcastContent = async (topic: string) => {
     const script = cleanScript(text)
 
     if (!script) {
-      return {
-        status: 400,
-        message: "Failed to generate podcast script",
-      }
+      return errorResponse(400, "Failed to generate podcast content")
     }
 
     const encodedParams = new URLSearchParams({
@@ -112,95 +106,64 @@ export const onGeneratePodcastContent = async (topic: string) => {
     const audio = await response.json()
 
     if (!audio || audio.status !== "success") {
-      return {
-        status: 400,
-        message: "Failed to generate podcast audio",
-      }
+      return errorResponse(400, "Failed to generate podcast audio")
     }
 
     return {
       status: 200,
-      message: "Podcast audio generated successfully",
       audio: audio.result.audio_url as string,
       script,
+      message: "Podcast audio generated successfully",
     }
-  } catch (error: any) {
-    return handleError(
-      "An error occurred while generating podcast audio",
-      error,
-    )
+  } catch (error) {
+    return errorHandle(error)
   }
 }
 
-export const onGeneratePodcastThumbnail = async (prompt: string) => {
-  if (!prompt) {
-    return {
-      status: 400,
-      message: "Prompt is required",
-    }
+export const onGeneratePodcastThumbnail = async (query: string) => {
+  if (!query) {
+    return errorResponse(400, "Query is required")
   }
 
-  const url = "https://chatgpt-42.p.rapidapi.com/texttoimage3"
-  const options = {
-    method: "POST",
-    headers: {
-      "x-rapidapi-key": process.env.NEXT_PUBLIC_RAPID_API_KEY!,
-      "x-rapidapi-host": "chatgpt-42.p.rapidapi.com",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      text: generateThumbnailPrompt(prompt),
-      width: 1080,
-      height: 1080,
-      steps: 1,
-    }),
-  }
+  const client = createClient(process.env.UNSPLASH_API_KEY!)
 
   try {
-    const response = await fetch(url, options)
-    const data = await response.json()
+    const data = await client.photos.search({ query, per_page: 1 })
 
-    if (!data?.generated_image) {
-      return {
-        status: 400,
-        message: "Failed to generate podcast thumbnail",
-      }
+    if ("error" in data || !data.photos.length) {
+      return errorResponse(400, "Failed to generate thumbnail")
     }
 
     return {
       status: 200,
-      message: "Podcast thumbnail generated successfully",
-      thumbnail: data.generated_image as string,
+      thumbnail: data.photos[0].src.original,
+      message: "Podcast thumbnail is ready!",
     }
-  } catch (error: any) {
-    return handleError(
-      "An error occurred while generating podcast thumbnail",
-      error,
-    )
+  } catch (error) {
+    return errorHandle(error)
   }
 }
 
 export const onGetRecentPodcasts = async () => {
   return fetchFromPrisma(
     prisma.podcast.findMany({
-      take: 5,
+      take: 4,
       select: {
         id: true,
         title: true,
-        thumbnail: true,
         description: true,
-        listeners: true,
-        author: true,
-        authorImage: true,
-        authorId: true,
-        transcript: true,
-        audio: true,
-        audioDuration: true,
-        createdAt: true,
         voice: true,
+        audio: true,
+        thumbnail: true,
+        user: true,
+        user_id: true,
+        transcript: true,
+        audioDuration: true,
+        listeners: true,
       },
       orderBy: { createdAt: "asc" },
     }),
+    "Podcast fetched successfully",
     "Failed to fetch recent podcasts",
   )
 }
@@ -209,30 +172,32 @@ export const onGetTrendingPodcasts = async () => {
   return fetchFromPrisma(
     prisma.podcast.findMany({
       take: 10,
+      where: {
+        listeners: { gte: 0 },
+      },
       select: {
         id: true,
         title: true,
-        thumbnail: true,
         description: true,
-        listeners: true,
-        author: true,
-        authorImage: true,
-        authorId: true,
-        transcript: true,
-        audio: true,
-        audioDuration: true,
-        createdAt: true,
         voice: true,
+        audio: true,
+        thumbnail: true,
+        user: true,
+        user_id: true,
+        transcript: true,
+        audioDuration: true,
+        listeners: true,
       },
       orderBy: { listeners: "desc" },
     }),
+    "Podcast fetched successfully",
     "Failed to fetch trending podcasts",
   )
 }
 
 export const onGetPodcastDetails = async (id: string) => {
   if (!id) {
-    return { status: 400, message: "Podcast ID is required" }
+    return errorResponse(400, "Podcast ID is required")
   }
 
   return fetchFromPrisma(
@@ -241,19 +206,18 @@ export const onGetPodcastDetails = async (id: string) => {
       select: {
         id: true,
         title: true,
-        thumbnail: true,
         description: true,
-        listeners: true,
-        author: true,
-        authorImage: true,
-        authorId: true,
-        transcript: true,
-        audio: true,
-        audioDuration: true,
-        createdAt: true,
         voice: true,
+        audio: true,
+        thumbnail: true,
+        user: true,
+        user_id: true,
+        transcript: true,
+        audioDuration: true,
+        listeners: true,
       },
     }),
+    "Podcast fetched successfully",
     "Failed to fetch podcast details",
   )
 }

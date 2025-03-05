@@ -4,50 +4,58 @@ import {
   onGetRecentPodcasts,
   onGetTrendingPodcasts,
 } from "@/actions/podcast.actions"
-import { useQuery } from "@tanstack/react-query"
-import { useDismissToast, useErrorToast, useLoadingToast } from "../toasts"
-import { handleApiResponse } from "../podcast/handle-api-response"
+import { useQuery, keepPreviousData } from "@tanstack/react-query"
+import { useErrorToast } from "../toasts"
+import { useCallback, useMemo } from "react"
 
-const usePodcastQuery = (
-  queryKey: string[],
-  queryFn: () => Promise<any>,
-  loadingMessage: string,
-) => {
-  const { data, isLoading, isError, error, isFetched } = useQuery({
+export const useTrendingPodcasts = () => {
+  const queryKey = useMemo(() => ["trending-podcasts"], [])
+  const queryFn = useCallback(() => onGetTrendingPodcasts(), [])
+
+  const { data, isLoading, error } = useQuery({
     queryKey,
     queryFn,
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 10,
-    retry: 2,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    placeholderData: keepPreviousData,
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 2,
   })
 
-  if (isLoading) useLoadingToast(loadingMessage, `${queryKey[0]}-loading`)
-
-  if (isFetched) useDismissToast(`${queryKey[0]}-loading`)
-
-  if (isError) {
-    useDismissToast(`${queryKey[0]}-loading`)
+  if (error) {
     useErrorToast(error)
   }
 
-  return { data: handleApiResponse(data) }
-}
+  if (data?.status !== 200) {
+    return { trendingPodcasts: null, isLoading, error }
+  }
 
-export const useTrendingPodcasts = () => {
-  const { data: trendingPodcasts } = usePodcastQuery(
-    ["trending-podcasts"],
-    onGetTrendingPodcasts,
-    "Loading trending podcasts...",
-  )
-  return { trendingPodcasts }
+  return { trendingPodcasts: data.data as Podcast[], isLoading, error: null }
 }
 
 export const useRecentPodcasts = () => {
-  const { data: recentPodcasts } = usePodcastQuery(
-    ["recent-podcasts"],
-    onGetRecentPodcasts,
-    "Loading recent podcasts...",
-  )
-  return { recentPodcasts }
+  const queryKey = useMemo(() => ["recent-podcasts"], [])
+  const queryFn = useCallback(() => onGetRecentPodcasts(), [])
+
+  const { data, isLoading, error } = useQuery({
+    queryKey,
+    queryFn,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 2,
+  })
+
+  if (error) {
+    useErrorToast(error)
+  }
+
+  if (data?.status !== 200) {
+    return { recentPodcasts: null, isLoading, error }
+  }
+
+  return { recentPodcasts: data.data, isLoading, error: null }
 }

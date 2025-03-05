@@ -6,7 +6,8 @@ import { useRecentPodcasts, useTrendingPodcasts } from "@/hooks/public-podcast"
 
 const PodcastHomePage = () => {
   const { trendingPodcasts } = useTrendingPodcasts()
-  const { recentPodcasts } = useRecentPodcasts()
+  // WIP: implement skeleton if loading
+  const { recentPodcasts, isLoading } = useRecentPodcasts()
 
   return (
     <div className="mt-9 max-md:mt-2 flex flex-col gap-9 md:overflow-hidden">

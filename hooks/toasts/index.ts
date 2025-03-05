@@ -12,6 +12,11 @@ export const useDismissToast = (id: string): void => {
 
 export const useErrorToast = (error: unknown): void => {
   const errorMessage =
-    error instanceof Error ? error.message : "An unexpected error occurred"
+    error instanceof Error
+      ? error.message
+      : typeof error === "string"
+        ? error
+        : "An unexpected error occurred"
+
   toast.error(errorMessage)
 }

@@ -1,29 +1,33 @@
 "use client"
 
 import { onGetPodcastDetails } from "@/actions/podcast.actions"
-import { useQuery } from "@tanstack/react-query"
-import { useDismissToast, useErrorToast, useLoadingToast } from "../toasts"
-import { handleSingleApiResponse } from "../podcast/handle-api-response"
+import { useQuery, keepPreviousData } from "@tanstack/react-query"
+import { useErrorToast } from "../toasts"
+import { useCallback, useMemo } from "react"
 
 export const usePodcastDetails = (podcastId: string) => {
-  const { data, isLoading, isError, error, isFetched } = useQuery({
-    queryKey: ["podcast-details", podcastId],
-    queryFn: () => onGetPodcastDetails(podcastId),
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 10,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
+  const queryKey = useMemo(() => ["podcast-details", podcastId], [podcastId])
+  const queryFn = useCallback(() => onGetPodcastDetails(podcastId), [podcastId])
+
+  const { data, isLoading, error } = useQuery({
+    queryKey,
+    queryFn,
     enabled: !!podcastId,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 2,
   })
 
-  if (isLoading) useLoadingToast("Please wait, loading podcast...", podcastId)
-
-  if (isFetched) useDismissToast(podcastId)
-
-  if (isError) {
-    useDismissToast(podcastId)
+  if (error) {
     useErrorToast(error)
   }
 
-  return { podcast: handleSingleApiResponse(data) }
+  if (data?.status !== 200) {
+    return { podcast: null, isLoading, error }
+  }
+
+  return { podcast: data.data as Podcast, isLoading, error: null }
 }

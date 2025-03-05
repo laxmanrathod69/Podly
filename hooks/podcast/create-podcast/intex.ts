@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 export const useCreatePodcast = () => {
   const router = useRouter()
   const client = useQueryClient()
-
+  // TODO: improve useMutation hook
   const { mutate: createPodcast, isPending } = useMutation({
     mutationFn: (data: Podcast) => onCreatePodcast(data),
     onSuccess(res) {
