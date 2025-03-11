@@ -11,8 +11,7 @@ datasource db {
 
 model User {
   id        String   @id @default(uuid()) @db.Uuid
-  firstname String
-  lastname  String
+  name      String
   createdAt DateTime @default(now())
   clerkId   String   @unique
   image     String?
@@ -27,13 +26,11 @@ model Podcast {
   description      String
   voice            String
   audio            String?
-  thumbnail        String
-  author           User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId         String   @db.Uuid
-  authorImage      String?
+  imageUrl         String
+  user             User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id          String   @db.Uuid
   transcript       String
-  imagePrompt      String?
-  audioDuration    Int
-  listeners            Int
+  listeners        Int
+  duration         String
   createdAt        DateTime @default(now())
 }

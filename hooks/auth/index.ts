@@ -1,17 +1,17 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery, keepPreviousData } from "@tanstack/react-query"
 import { redirect, useRouter } from "next/navigation"
 import { useAuth, useClerk, useSignIn, useSignUp } from "@clerk/nextjs"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { OAuthStrategy } from "@clerk/types"
-import { useEffect, useState } from "react"
-import { onSignUpUser } from "@/actions/auth.actions"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { onAuthenticatedUser, onSignUpUser } from "@/actions/auth/auth.actions"
 import { SignInSchema } from "@/components/global/auth/forms/sign-in/schema"
 import { SignUpSchema } from "@/components/global/auth/forms/sign-up/schema"
-import { useErrorToast2, useSuccessToast } from "../toasts"
+import { toast } from "sonner"
 
 export const useAuthSignIn = () => {
   const { isLoaded, signIn, setActive } = useSignIn()
@@ -28,7 +28,10 @@ export const useAuthSignIn = () => {
   })
 
   const onClerkAuth = async (email: string, password: string) => {
-    if (!isLoaded) return useErrorToast2("Oops! something went wrong")
+    if (!isLoaded) {
+      toast.error("Oops! something went wrong")
+      return
+    }
 
     try {
       const authenticated = await signIn.create({
@@ -39,13 +42,13 @@ export const useAuthSignIn = () => {
       if (authenticated.status === "complete") {
         reset()
         await setActive({ session: authenticated.createdSessionId })
-        useSuccessToast("Welcome back!")
+        toast.success("Welcome back!")
         router.push("/callback/sign-in")
       } else {
-        useErrorToast2("Failed to sign in. Please check your credentials.")
+        toast.error("Failed to sign in. Please check your credentials.")
       }
     } catch (error: any) {
-      useErrorToast2("Incorrect email or password, try again.")
+      toast.error("Incorrect email or password, try again.")
     }
   }
 
@@ -86,7 +89,10 @@ export const useAuthSignUp = () => {
   const router = useRouter()
 
   const onGenerateCode = async (email: string, password: string) => {
-    if (!isLoaded) return useErrorToast2("Oops! something went wrong")
+    if (!isLoaded) {
+      toast.error("Oops! something went wrong")
+      return
+    }
     try {
       if (email && password) {
         await signUp.create({
@@ -98,16 +104,20 @@ export const useAuthSignUp = () => {
         setVerifying(true)
       } else {
         setVerifying(false)
-        return useErrorToast2("No fields must be empty")
+        toast.error("No fields must be empty")
+        return
       }
     } catch (error: any) {
       console.error(JSON.stringify(error, null, 2))
-      return useErrorToast2("Oops! something went wrong.")
+      toast.error("Oops! something went wrong.")
     }
   }
 
   const onInitiateUserRegistration = handleSubmit(async (values) => {
-    if (!isLoaded) return useErrorToast2("Oops! something went wrong.")
+    if (!isLoaded) {
+      toast.error("Oops! something went wrong.")
+      return
+    }
 
     try {
       setCreating(true)
@@ -117,7 +127,8 @@ export const useAuthSignUp = () => {
 
       if (completeSignUp.status !== "complete") {
         setCreating(false)
-        return useErrorToast2("Oops! something went wrong.")
+        toast.error("Oops! something went wrong.")
+        return
       }
 
       if (completeSignUp.status === "complete") {
@@ -133,14 +144,14 @@ export const useAuthSignUp = () => {
         reset()
 
         if (user.status === 200) {
-          useSuccessToast(user.message)
+          toast.error(user.message)
           await setActive({ session: completeSignUp.createdSessionId })
           setCreating(false)
           router.push("/") // WIP: redirect to dashboard
         }
 
         if (user.status !== 200) {
-          useErrorToast2(user.message)
+          toast.error(user.message)
           router.refresh
         }
 
@@ -151,7 +162,7 @@ export const useAuthSignUp = () => {
       }
     } catch (error: any) {
       console.error(JSON.stringify(error, null, 2))
-      return useErrorToast2("Oops! something went wrong.")
+      toast.error("Oops! something went wrong.")
     }
   })
 
@@ -174,7 +185,7 @@ export const useGoogleAuth = () => {
 
   const signInWith = (strategy: OAuthStrategy) => {
     if (!LoadedSignIn) {
-      useErrorToast2("Oops! something went wrong")
+      toast.error("Oops! something went wrong")
       redirect("/sign-in")
     }
     try {
@@ -184,13 +195,13 @@ export const useGoogleAuth = () => {
         redirectUrlComplete: "/callback/sign-in",
       })
     } catch (error: any) {
-      useErrorToast2("Oops! something went wrong")
+      toast.error("Oops! something went wrong")
     }
   }
 
   const signUpWith = (strategy: OAuthStrategy) => {
     if (!LoadedSignUp) {
-      useErrorToast2("Oops! Something went wrong")
+      toast.error("Oops! Something went wrong")
       redirect("/sign-up")
     }
     try {
@@ -200,7 +211,7 @@ export const useGoogleAuth = () => {
         redirectUrlComplete: "/callback/complete",
       })
     } catch (error: any) {
-      useErrorToast2("Oops! something went wrong")
+      toast.error("Oops! something went wrong")
     }
   }
 
@@ -214,12 +225,12 @@ export const useSignOut = () => {
   const onSignOutUser = async (sessionId: string) => {
     try {
       await signOut({ sessionId })
-      useSuccessToast("You have successfully signed out")
+      toast.success("You have successfully signed out")
       redirect("/")
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Oops! something went wrong"
-      useErrorToast2(errorMessage)
+      toast.error(errorMessage)
     }
   }
 
@@ -230,4 +241,30 @@ export const useSignOut = () => {
   }, [sessionId, onSignOutUser])
 
   return null
+}
+
+export const useCurrentUser = () => {
+  const queryKey = useMemo(() => ["current-user"], [])
+  const queryFn = useCallback(() => onAuthenticatedUser(), [])
+
+  const { data, isLoading, error } = useQuery({
+    queryKey,
+    queryFn,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 2,
+  })
+
+  if (error) {
+    toast.error(error.message)
+  }
+
+  if (data?.status !== 200) {
+    return { user: null, isLoading, error }
+  }
+
+  return { user: data.data as User, isLoading, error: null }
 }
