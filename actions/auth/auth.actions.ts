@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/prisma"
 import { currentUser } from "@clerk/nextjs/server"
-import { errorHandle, errorResponse } from "../db-error-handle"
+import { errorHandle, errorResponse } from "../../lib/db-error-handle"
 
 export const onAuthenticatedUser = async () => {
   try {

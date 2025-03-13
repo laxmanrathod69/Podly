@@ -6,7 +6,7 @@ import { cleanScript } from "@/lib/utils"
 import { google } from "@ai-sdk/google"
 import { generateText } from "ai"
 import { createClient } from "pexels"
-import { errorHandle, errorResponse } from "../db-error-handle"
+import { errorHandle, errorResponse } from "../../lib/db-error-handle"
 
 const fetchFromPrisma = async (
   query: any,

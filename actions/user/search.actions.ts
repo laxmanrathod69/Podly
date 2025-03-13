@@ -1,7 +1,7 @@
 "use server"
 
 import prisma from "@/lib/prisma"
-import { errorHandle, errorResponse } from "../db-error-handle"
+import { errorHandle, errorResponse } from "../../lib/db-error-handle"
 
 export const onSearch = async (query: string) => {
   if (!query) return errorResponse(400, "Query parameter is required.")
