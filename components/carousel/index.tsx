@@ -6,7 +6,7 @@ import {
   CarouselItem,
   type CarouselApi,
 } from "@/components/ui/carousel"
-import { useTopPodcasters } from "@/hooks/top-podcasters"
+import { useTopPodcasters } from "@/hooks/user/top-podcasters"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
@@ -18,7 +18,9 @@ export const PodcastersCarousel = () => {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([])
 
-  const { topPodcasters, isPending } = useTopPodcasters()
+  const { topPodcasters, isLoading } = useTopPodcasters()
+
+  if (!topPodcasters?.length) return null
   const router = useRouter()
 
   const onSelect = useCallback(() => {
@@ -45,24 +47,27 @@ export const PodcastersCarousel = () => {
 
   return (
     <section className="flex w-full flex-col gap-4 transition-all hover:brightness-125 duration-200 ease-in">
-      <Carousel setApi={setCarouselAPI}>
-        <CarouselContent className="flex rounded-xl overflow-hidden">
-          {topPodcasters?.map((user: User) => (
+      <Carousel
+        setApi={setCarouselAPI}
+        className="w-full rounded-xl overflow-hidden shadow-xl"
+      >
+        <CarouselContent>
+          {topPodcasters.map((user: User) => (
             <CarouselItem
               key={user.id}
               className="carousel_box"
               onClick={() => router.push(`/user/${user.id}`)}
             >
               <Image
-                src={user.image!}
+                src={user.image || "/icons/profile.svg"}
                 alt={user.name}
-                width={285}
-                height={285}
-                className="absolute size-full rounded-xl border-none"
+                width={251}
+                height={251}
+                className="absolute size-full rounded-xl border-none object-cover"
               />
               <div className="glassmorphism-black relative z-10 flex flex-col rounded-b-xl p-4">
                 <h2 className="text-14 font-semibold text-white-1 truncate">
-                  {user.podcast?.[0].title}
+                  {user?.podcast?.[0]?.title ?? ""}
                 </h2>
                 <p className="text-12 font-normal text-white-2">{user.name}</p>
               </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { usePodcast } from "@/contexts/podcast-context"
+import { usePodcast } from "@/context/provider"
 import Image from "next/image"
 import Link from "next/link"
 import { GlobalDropdownMenu } from "../drop-down"
@@ -9,20 +9,32 @@ import { PlayCircle } from "@/public/icons/play-circle"
 import { PauseCircle } from "@/public/icons/pause-circle"
 import { useCallback } from "react"
 import { PODCAST_DETAILS_ITEMS } from "@/constants/constant"
+import { Button } from "@/components/ui/button"
 
 export const PodcastHeader = ({ isOwner, podcast }: PodcastHeaderProps) => {
-  const { playPodcast, currentPodcast } = usePodcast()
+  const { playPodcast, currentPodcast, togglePlayPause, isPlaying } =
+    usePodcast()
 
   const dropdownMenuItems = useCallback(() => {
     return PODCAST_DETAILS_ITEMS(isOwner)
   }, [isOwner])
+
+  const isCurrentlyPlaying = currentPodcast?.id === podcast?.id && isPlaying
+
+  const handlePlayPause = () => {
+    if (currentPodcast?.id === podcast?.id) {
+      togglePlayPause()
+    } else {
+      playPodcast(podcast)
+    }
+  }
 
   return (
     <header className="mt-5 md:mt-8 w-full flex flex-col gap-8">
       <div className="flex w-full gap-5 max-md:flex-col">
         <div className="shadow-2xl">
           <Image
-            src={podcast.thumbnail!}
+            src={podcast.imageUrl!}
             width={200}
             height={200}
             alt="Podcast image"
@@ -51,16 +63,20 @@ export const PodcastHeader = ({ isOwner, podcast }: PodcastHeaderProps) => {
         </div>
       </div>
       <div className="flex items-center justify-start gap-6">
-        <button
-          onClick={() => playPodcast(podcast.id!)}
+        <Button
+          type="button"
+          size="icon"
+          onClick={handlePlayPause}
           className="flex items-center gap-2 hover:scale-105 transition-transform"
+          aria-label="Play Podcast"
+          title="Play Podcast"
         >
-          {!!currentPodcast ? (
+          {isCurrentlyPlaying ? (
             <PauseCircle w="50" h="50" />
           ) : (
             <PlayCircle w="50" h="50" />
           )}
-        </button>
+        </Button>
 
         <div className="hover:scale-110 transition-all duration-75 ease-in">
           <GlobalDropdownMenu

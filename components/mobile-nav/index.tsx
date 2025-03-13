@@ -1,22 +1,26 @@
 "use client"
 
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
 
 import { cn } from "@/lib/utils"
-import { sidebarLinks } from "@/constants"
+import { SIDEBAR_ITEMS } from "@/constants/constant"
 
 const MobileNav = ({ user }: { user: User }) => {
+  const router = useRouter()
+
+  if (!user?.id) {
+    return null
+  }
   const pathname = usePathname()
 
   return (
@@ -43,18 +47,18 @@ const MobileNav = ({ user }: { user: User }) => {
           </SheetHeader>
 
           <nav className="flex flex-col gap-9 text-white-1 mt-8 flex-grow">
-            {sidebarLinks.map(({ route, imgURL, label }) => {
+            {SIDEBAR_ITEMS.map(({ route, item, label }) => {
               const isActive =
                 pathname === route || pathname.startsWith(`${route}/`)
               return (
                 <Link
-                  key={imgURL}
+                  key={label}
                   href={route}
                   className={cn("flex gap-3 py-3 items-center justify-start", {
                     "bg-nav-focus border-r-4 border-orange-1": isActive,
                   })}
                 >
-                  <Image src={imgURL} alt={label} width={24} height={24} />
+                  {item}
                   <p>{label}</p>
                 </Link>
               )

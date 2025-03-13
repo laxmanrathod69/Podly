@@ -1,11 +1,11 @@
 "use client"
 
-import { sidebarLinks } from "@/constants"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { usePodcast } from "@/contexts/podcast-context"
+import { usePodcast } from "@/context/provider"
+import { SIDEBAR_ITEMS } from "@/constants/constant"
 
 const LeftSidebar = () => {
   const { currentPodcast } = usePodcast()
@@ -27,7 +27,7 @@ const LeftSidebar = () => {
             Podly
           </h1>
         </Link>
-        {sidebarLinks.map(({ route, label, imgURL }) => {
+        {SIDEBAR_ITEMS.map(({ route, label, item }) => {
           const isActive =
             pathname === route || pathname.startsWith(`${route}/`)
 
@@ -40,7 +40,7 @@ const LeftSidebar = () => {
                 { "bg-nav-focus border-r-4 border-orange-1": isActive },
               )}
             >
-              <Image src={imgURL} alt={label} width={24} height={24} />
+              {item}
               <p>{label}</p>
             </Link>
           )

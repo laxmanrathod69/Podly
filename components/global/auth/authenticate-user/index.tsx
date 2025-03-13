@@ -1,12 +1,10 @@
 import { onSignInUser, onSignUpUser } from "@/actions/auth/auth.actions"
 import { currentUser } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
-import { toast } from "sonner"
 
 export const AuthenticateUser = async () => {
   const user = await currentUser()
   if (!user?.id) {
-    toast.error("Something went wrong. Please try again later.")
     return redirect("/sign-in")
   }
 
@@ -27,6 +25,5 @@ export const AuthenticateUser = async () => {
     return redirect("/") // Redirect to the home page/dashboard
   }
 
-  toast.error("Something went wrong. Please try again later.")
   return redirect("/sign-in")
 }
