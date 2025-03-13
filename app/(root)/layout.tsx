@@ -1,27 +1,35 @@
 import Image from "next/image"
 import LeftSidebar from "@/components/global/left-sidebar"
-import PodcastPlayer from "@/components/global/podcast-player"
+
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query"
+
+import { onAuthenticatedUser } from "@/actions/auth/auth.actions"
+import RightSidebar from "@/components/global/right-sidebar"
+import MobileNav from "@/components/mobile-nav"
 import {
   onGetRecentPodcasts,
   onGetTrendingPodcasts,
-} from "@/actions/podcast.actions"
-import { onAuthenticatedUser } from "@/actions/auth.actions"
+} from "@/actions/podcast/podcast.actions"
 import {
   onGetPopularPodcasters,
   onGetTopPodcasters,
-} from "@/actions/user.actions"
-import RightSidebar from "@/components/global/right-sidebar"
-import MobileNav from "@/components/mobile-nav"
+} from "@/actions/user/user.actions"
+import { redirect } from "next/navigation"
+import { Player } from "@/components/global/player"
 
 const HomeLayout = async ({ children }: ChildrenProp) => {
   const query = new QueryClient()
+
   const authenticated = await onAuthenticatedUser()
-  if (authenticated?.status !== 200) return null
+  if (!authenticated || authenticated?.status !== 200) {
+    redirect("/sign-in")
+  }
+
+  const user = authenticated.data as User
 
   await query.prefetchQuery({
     queryKey: ["trending-podcasts"],
@@ -57,14 +65,14 @@ const HomeLayout = async ({ children }: ChildrenProp) => {
                   width={30}
                   height={30}
                 />
-                <MobileNav user={authenticated.user as User} />
+                <MobileNav user={user} />
               </div>
               <div className="flex flex-col md:pb-14">{children}</div>
             </div>
           </section>
-          <RightSidebar user={authenticated.user as User} />
+          <RightSidebar user={user} />
         </main>
-        <PodcastPlayer />
+        <Player />
       </div>
     </HydrationBoundary>
   )

@@ -1,23 +1,22 @@
 import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form"
 import { v4 } from "uuid"
 
-export const sidebarLinks = [
-  {
-    imgURL: "/icons/home.svg",
-    route: "/",
-    label: "Home",
-  },
-  {
-    imgURL: "/icons/discover.svg",
-    route: "/discover",
-    label: "Discover",
-  },
-  {
-    imgURL: "/icons/microphone.svg",
-    route: "/create-podcast",
-    label: "Create Podcast",
-  },
+export const AIVOICES = [
+  { name: "Natalie", voiceId: "en-US-natalie", style: "Promo" },
+  { name: "Amara", voiceId: "en-US-amara", style: "Conversational" },
+  { name: "Jualia", voiceId: "en-US-julia", style: "Narration" },
+  { name: "Zion", voiceId: "en-US-zion", style: "Promo" },
+  { name: "Ken", voiceId: "en-US-ken", style: "Conversational" },
+  { name: "Riley", voiceId: "en-US-riley", style: "Conversational" },
 ]
+
+export const QUERY_KEYS = {
+  trendingPodcasts: "trending-podcasts",
+  popularPodcasts: "popular-podcasts",
+  recentPodcasts: "recent-podcasts",
+  topPodcasters: "top-podcasters",
+  popularPodcasters: "popular-podcasters",
+} as const
 
 export const SIGN_UP_FORM: AuthFormProps[] = [
   {

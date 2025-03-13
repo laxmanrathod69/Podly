@@ -11,7 +11,7 @@ Ensure the tone is friendly, conversational, and easy to follow. The script shou
 //   const promptTitle = isTitle ? prompt : ""
 //   const promptKeywords = !isTitle ? prompt : ""
 
-//   return `Generate a podcast thumbnail image for a podcast titled '${promptTitle || promptKeywords}' for Podly, an AI-powered podcast app. The image should be visually appealing, realistic, and relevant to the podcast topic. Use the following details for inspiration:
+//   return `Generate a podcast imageUrl image for a podcast titled '${promptTitle || promptKeywords}' for Podly, an AI-powered podcast app. The image should be visually appealing, realistic, and relevant to the podcast topic. Use the following details for inspiration:
 
 // 1. Podcast Title: ${promptTitle || promptKeywords}
 
@@ -24,9 +24,9 @@ Ensure the tone is friendly, conversational, and easy to follow. The script shou
 //   • For a music podcast: musical notes, instruments, vibrant colors, or performers.
 //   • For a business or entrepreneurship podcast: professional office settings, people collaborating, modern office spaces, or graphs.
 
-// 4. Overall Tone: The thumbnail should convey the feel of the podcast—whether it's energetic, calm, professional, or creative.
+// 4. Overall Tone: The imageUrl should convey the feel of the podcast—whether it's energetic, calm, professional, or creative.
 
 // 5. Text: The podcast title should be included in bold, legible text. The font should be clean and easy to read, even at smaller sizes.
 
-// Make the image look realistic and professional, with a high-quality, polished finish. The color scheme should align with the mood and topic of the podcast, and the composition should be balanced to ensure the thumbnail stands out in a podcast directory.`
+// Make the image look realistic and professional, with a high-quality, polished finish. The color scheme should align with the mood and topic of the podcast, and the composition should be balanced to ensure the imageUrl stands out in a podcast directory.`
 // }

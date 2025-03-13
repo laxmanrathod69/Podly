@@ -2,11 +2,16 @@
 
 import { LatestPodcastCard } from "@/components/global/podcast-cards/latest-podcast-card"
 import { PodcastCard } from "@/components/global/podcast-cards/podcast-card"
-import { useRecentPodcasts, useTrendingPodcasts } from "@/hooks/public-podcast"
+import {
+  usePopularPodcasts,
+  useRecentPodcasts,
+  useTrendingPodcasts,
+} from "@/hooks/podcast/public-podcast"
 
 const PodcastHomePage = () => {
-  const { trendingPodcasts } = useTrendingPodcasts()
   // WIP: implement skeleton if loading
+  const { trendingPodcasts } = useTrendingPodcasts()
+  const { popularPodcasts } = usePopularPodcasts()
   const { recentPodcasts, isLoading } = useRecentPodcasts()
 
   return (
@@ -32,14 +37,13 @@ const PodcastHomePage = () => {
             ))}
           </div>
         )}
-        {trendingPodcasts && (
+        {popularPodcasts && (
           <div className="flex flex-col gap-3">
             <h1 className="text-20 font-bold text-white-1">Popular Podcasts</h1>
             <div className="podcast_grid">
-              {trendingPodcasts.map((podcast: Podcast) => (
+              {popularPodcasts.map((podcast: Podcast) => (
                 <PodcastCard key={podcast.id} podcast={podcast} />
               ))}
-              {/* TODO: Add popular podcasts */}
             </div>
           </div>
         )}

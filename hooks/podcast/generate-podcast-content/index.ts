@@ -1,33 +1,32 @@
-import { onGeneratePodcastContent } from "@/actions/podcast.actions"
+"use client"
+
+import { onGenerateContent } from "@/actions/podcast/podcast.actions"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
-// Generate podcast content
-export const useGeneratePodcastContent = () => {
-  const client = useQueryClient()
+export const useGenerateContent = () => {
+  const queryClient = useQueryClient()
 
-  const {
-    mutate: generatePodcastContent,
-    isPending: isGenerating,
-    data: podcastContent,
-  } = useMutation({
-    mutationFn: (voicePrompt: string) => onGeneratePodcastContent(voicePrompt),
-    onSuccess: (res) => {
-      return toast(res.status !== 200 ? "Error" : "Success", {
-        description: res.message,
-      })
+  const mutation = useMutation({
+    mutationFn: (prompt: string) => onGenerateContent(prompt),
+
+    onSuccess: (response) => {
+      if (response.status !== 200) {
+        toast.error(response.message || "Something went wrong")
+        return
+      }
+
+      toast.success(response.message)
+      queryClient.invalidateQueries({ queryKey: ["content"] })
     },
-    onError: (err) => {
-      return toast("Error", { description: err.message })
-    },
-    onSettled: async () => {
-      return await client.invalidateQueries({ queryKey: ["podcasts"] })
+    onError: (error) => {
+      toast.error(error.message || "Failed to generate content")
     },
   })
 
   return {
-    generatePodcastContent,
-    isGenerating,
-    podcastContent,
+    generateContent: mutation.mutate,
+    isPending: mutation.isPending,
+    data: mutation.data?.data,
   }
 }

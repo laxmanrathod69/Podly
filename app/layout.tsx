@@ -3,9 +3,9 @@ import { Manrope } from "next/font/google"
 import { ClerkProvider } from "@clerk/nextjs"
 import { Toaster } from "sonner"
 import { ReactQueryProvider } from "@/react-query/provider"
-import { PodcastProvider } from "@/contexts/podcast-context"
 import { ThemeProvider } from "@/components/theme"
 import "./globals.css"
+import { AudioPlayerProvider } from "@/context/provider"
 
 const manrope = Manrope({ subsets: ["latin"] })
 
@@ -22,19 +22,19 @@ const RootLayout = ({ children }: ChildrenProp) => {
   return (
     <ClerkProvider>
       <html lang="en">
-        <PodcastProvider>
-          <body className={manrope.className}>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
+        <body className={manrope.className}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <AudioPlayerProvider>
               <ReactQueryProvider>{children}</ReactQueryProvider>
               <Toaster />
-            </ThemeProvider>
-          </body>
-        </PodcastProvider>
+            </AudioPlayerProvider>
+          </ThemeProvider>
+        </body>
       </html>
     </ClerkProvider>
   )

@@ -12,62 +12,84 @@ declare interface AuthFormProps {
 
 declare interface User {
   id: string
-  image?: string
-  firstname: string
-  lastname: string
-  createdAt: Date
-  clerkId: string
-  podcast: Podcast[]
-  monthlyListeners?: number
+  name: string
+  image?: string | null // TODO: change to undefined
+  podcast?: Podcast[]
+  monthlyListeners: number
+  createdAt?: Date
 }
 
 declare interface Podcast {
-  id: string
+  id?: string
   title: string
   description: string
   voice: string
   audio?: string | null
-  thumbnail: string
-  authorId: string
-  authorImage?: string | null
+  imageUrl: string | undefined
+  user?: User
+  user_id: string
   transcript: string
-  audioDuration: number
+  duration: string
+  createdAt?: Date
   listeners: number
-  createdAt: Date
-  author: {
-    id: string
-    firstname: string
-    lastname: string
-    image?: string | null
-  }
 }
 
-declare interface CreatePodcastData {
-  title: string
-  description: string
-  voice: string
-  audio?: string | null
-  thumbnail: string
-  transcript: string
-  audioDuration: number
-  listeners: number
-  author: {
-    id: string
-    firstname: string
-    lastname: string
-    image?: string | null
-  }
+declare interface AudioPlayerContextType {
+  currentPodcast: Podcast | null
+  isPlaying: boolean
+  progress: number
+  duration: number
+  currentTime: number
+  volume: number
+  playPodcast: (podcast: Podcast) => void
+  togglePlayPause: () => void
+  seekTo: (time: number) => void
+  skipForward: (seconds?: number) => void
+  skipBackward: (seconds?: number) => void
+  setVolume: (volume: number) => void
+  toggleMute: () => void
+  audioRef: React.RefObject<HTMLAudioElement | null>
 }
-
-declare type APIResponse =
-  | {
-      status: number
-      message?: string
-      data?: Podcast[]
-    }
-  | { status: number; message?: string; data?: Podcast }
 
 declare interface PodcastDetailProps {
   podcastId: string
   userId: string
+}
+
+declare interface PodcastHeaderProps {
+  isOwner: boolean
+  podcast: Podcast
+}
+
+declare interface CoverProps {
+  id: string
+  title: string
+  podcaster: string
+  isPlaying: boolean
+  handlePlayPause: () => void
+  image?: string
+}
+
+declare interface PlayerControlsProps {
+  forward: () => void
+  rewind: () => void
+  isPlaying: boolean
+  currentTime: number
+  duration: number
+  handleSeek: (e: React.MouseEvent<HTMLDivElement>) => void
+  handlePlayPause: () => void
+}
+
+declare interface SliderControlsProps {
+  forward: () => void
+  rewind: () => void
+  isPlaying: boolean
+  handlePlayPause: () => void
+}
+
+declare interface SliderProps {
+  min: number
+  max: number
+  value: number
+  handleChange: (val: number[]) => void
 }
