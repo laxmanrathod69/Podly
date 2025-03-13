@@ -35,12 +35,9 @@ const config = {
           "6": "#24272C",
           input: "#1b1f29",
         },
-        orange: {
-          "1": "#F97535",
-        },
-        gray: {
-          "1": "#71788B",
-        },
+        orange: { "1": "#F97535" },
+        accent: { "1": "#b0f53e" },
+        gray: { "1": "#71788B" },
         progress: {
           bg: "hsl(0deg 0% 25.1%)",
           indicator: "hsl(0deg 0% 100%)",
@@ -67,7 +64,7 @@ const config = {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
         },
-        accent: {
+        accent2: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
@@ -108,9 +105,15 @@ const config = {
           },
         },
       },
+      anim: {
+        "0%": { height: "0" },
+        "50%": { height: "12px" },
+        "100%": { height: "0" },
+      },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        anim: "anim 500ms ease infinite",
       },
       borderRadius: {
         lg: "var(--radius)",
