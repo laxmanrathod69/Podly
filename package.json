@@ -42,7 +42,6 @@
     "react-dom": "19.0.0",
     "react-hook-form": "^7.54.2",
     "sonner": "^2.0.1",
-    "supabase": "^2.19.5",
     "svix": "^1.60.1",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
