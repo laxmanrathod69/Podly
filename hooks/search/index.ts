@@ -26,5 +26,5 @@ export const useSearch = (query: string) => {
     return { data: null, isLoading }
   }
 
-  return { data: data.data as User, isLoading }
+  return { data: data.data as User[], isLoading }
 }
