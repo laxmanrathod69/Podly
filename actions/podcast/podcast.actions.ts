@@ -121,7 +121,7 @@ export const onGenerateContent = async (topic: string) => {
   }
 }
 
-export const onGenerateThumbnail = async (query: string) => {
+export const onGenerateThumbnail = async (query: string | undefined) => {
   if (!query) {
     return errorResponse(400, "Query is required")
   }

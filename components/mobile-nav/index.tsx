@@ -1,6 +1,6 @@
 "use client"
 
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import {
@@ -16,8 +16,6 @@ import { cn } from "@/lib/utils"
 import { SIDEBAR_ITEMS } from "@/constants/constant"
 
 const MobileNav = ({ user }: { user: User }) => {
-  const router = useRouter()
-
   if (!user?.id) {
     return null
   }
@@ -66,15 +64,18 @@ const MobileNav = ({ user }: { user: User }) => {
           </nav>
           {/*FIX: User component is not showing properly */}
           <div className="flex items-center gap-3 absolute bottom-4 left-4">
-            <div className="glassmorphism-black p-[0.20rem] w-fit rounded-full">
+            <Link
+              href={`/user/${user.id}`}
+              className="glassmorphism-black p-[0.20rem] w-fit rounded-full"
+            >
               <Image
-                src={user.image || "/icons/profile.svg"}
+                src={user?.image || "/icons/profile.svg"}
                 alt={user.name}
                 width={45}
                 height={45}
                 className="rounded-full"
               />
-            </div>
+            </Link>
             <h1 className="text-base font-medium text-white-1 hover:underline">
               {user.name}
             </h1>

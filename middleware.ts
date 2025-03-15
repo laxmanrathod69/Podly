@@ -1,7 +1,11 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
 
-const isProtectedRoute = createRouteMatcher(["/podcast(.*)", "/user(.*)"])
+const isProtectedRoute = createRouteMatcher([
+  "/create(.*)",
+  "/podcast(.*)",
+  "/user(.*)",
+])
 
 export default clerkMiddleware(async (Auth, req) => {
   const baseHost = "localhost:3000"
@@ -36,8 +40,5 @@ export default clerkMiddleware(async (Auth, req) => {
 })
 
 export const config = {
-  matcher: [
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    "/(api|trpc)(.*)",
-  ],
+  matcher: ["/api/(.*)", "/podcast(.*)", "/user(.*)", "/create(.*)"],
 }

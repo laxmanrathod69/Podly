@@ -13,10 +13,7 @@ const PodcastDetailsPage = async ({ params }: { params: Props }) => {
   }
 
   return (
-    <PodcastDetail
-      podcastId={podcastId}
-      userId={userData.data.user?.id ?? ""}
-    />
+    <PodcastDetail podcastId={podcastId} userId={userData.data?.id ?? ""} />
   )
 }
 

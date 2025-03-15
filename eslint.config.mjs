@@ -15,6 +15,7 @@ export default tseslint.config(
       "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
       "@typescript-eslint/consistent-type-definitions": "off",
       "no-useless-escape": "off", // Disable the no-useless-escape rule
+      "selector-type-no-unknown": "off",
     },
   },
 )

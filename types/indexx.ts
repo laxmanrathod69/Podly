@@ -4,13 +4,14 @@ export interface DropDownMenuProps {
   trigger?: JSX.Element
   items: { id: string; item: JSX.Element; action: () => void }[]
   specialItems?: { id: string; item: JSX.Element; action: () => void }[]
+  className?: string
 }
 
 export interface ThumbnailGenerateProps {
   imageUrl: string | undefined
   setImageUrl: Dispatch<SetStateAction<string | undefined>>
-  imagePrompt?: string | null
-  setImagePrompt: Dispatch<SetStateAction<string | null>>
+  imagePrompt?: string | undefined
+  setImagePrompt: Dispatch<SetStateAction<string | undefined>>
 }
 
 export interface PodcastContextType {

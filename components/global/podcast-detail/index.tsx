@@ -10,7 +10,7 @@ const PodcastDetails = ({ podcastId, userId }: PodcastDetailProps) => {
   const isOwner: boolean = userId === podcast.user_id
 
   return (
-    <section className="flex w-full flex-col gap-8">
+    <section className="flex w-full flex-col gap-5">
       <PodcastHeader podcast={podcast} isOwner={isOwner} />
 
       <div className="flex flex-col gap-4">

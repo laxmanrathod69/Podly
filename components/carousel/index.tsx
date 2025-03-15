@@ -59,7 +59,7 @@ export const PodcastersCarousel = () => {
               onClick={() => router.push(`/user/${user.id}`)}
             >
               <Image
-                src={user.image || "/icons/profile.svg"}
+                src={user?.image || "/icons/profile.svg"}
                 alt={user.name}
                 width={251}
                 height={251}

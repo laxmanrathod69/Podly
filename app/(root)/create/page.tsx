@@ -1,5 +1,7 @@
 "use client"
 
+export const dynamic = "force-dynamic"
+
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 
@@ -16,13 +18,13 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useCurrentUser } from "@/hooks/auth"
 import GenerateThumbnail from "@/components/global/podcast/generate-thumbnail"
-import { Toast } from "@/components/global/toast"
+import { toast } from "sonner"
 
 const CreatePodcast = () => {
   const [audioUrl, setAudioUrl] = useState<string | undefined>(undefined)
   const [duration, setDuration] = useState<string>("")
   const [imageUrl, setImageUrl] = useState<string | undefined>("")
-  const [imagePrompt, setImagePrompt] = useState<string | null>(null)
+  const [imagePrompt, setImagePrompt] = useState<string | undefined>(undefined)
   const [transcript, setTranscript] = useState<string>("")
   const [listeners, setListeners] = useState<number>(2000)
   const [currentVoice, setCurrentVoice] = useState<string>("")
@@ -48,7 +50,8 @@ const CreatePodcast = () => {
       !audioUrl ||
       !currentVoice
     ) {
-      return <Toast type="error" message="Please fill all the fields" />
+      toast.error("Please fill in all fields")
+      return null
     }
 
     if (!isPending) {

@@ -8,7 +8,7 @@ export const useGenerateThumbnail = () => {
   const client = useQueryClient()
 
   const { mutate, isPending, data } = useMutation({
-    mutationFn: (prompt: string) => onGenerateThumbnail(prompt),
+    mutationFn: (prompt: string | undefined) => onGenerateThumbnail(prompt),
 
     onSuccess: (res) => {
       if (res.status !== 200) {

@@ -10,12 +10,13 @@ import {
   RIGHTSIDEBAR_USER_PROFILE_ITEMS,
   RIGHTSIDEBAR_USER_PROFILE_SPECIAL_ITEMS,
 } from "@/constants/constant"
+import { usePodcast } from "@/context/provider"
 
 const RightSidebar = ({ user }: { user: User }) => {
-  if (!user?.id) return null
+  const { popularPodcasters, isLoading } = usePopularPodcasters() // WIP: add skeleton if loading
+  const { currentPodcast } = usePodcast()
 
   const router = useRouter()
-  const { popularPodcasters, isLoading } = usePopularPodcasters() // WIP: add skeleton if loading
 
   const dropdownMenuItems = useCallback(() => {
     return RIGHTSIDEBAR_USER_PROFILE_ITEMS(user.id)
@@ -25,23 +26,26 @@ const RightSidebar = ({ user }: { user: User }) => {
     return RIGHTSIDEBAR_USER_PROFILE_SPECIAL_ITEMS
   }, [])
 
+  if (!user?.id) return null
+
   return (
-    <section className="right_sidebar">
-      <div className="glassmorphism-black rounded-full w-fit p-2 mb-5 cursor-pointer hover:scale-105 shadow-xl">
-        <GlobalDropdownMenu
-          trigger={
-            <Image
-              src={user.image || "/icons/profile.svg"}
-              alt={user.name}
-              width={40}
-              height={40}
-              className="aspect-square rounded-full"
-            />
-          }
-          items={dropdownMenuItems()}
-          specialItems={dropdownMenuSpecialItems}
-        />
-      </div>
+    <section
+      className={`right_sidebar ${currentPodcast?.id ? "h-[calc(100vh-80px)]" : "h-screen"}`}
+    >
+      <GlobalDropdownMenu
+        className="rounded-full w-fit p-2 mb-5 cursor-pointer hover:scale-105 glassmorphism-black relative z-10"
+        trigger={
+          <Image
+            src={user?.image || "/icons/profile.svg"}
+            alt={user.name}
+            width={30}
+            height={30}
+            className="w-full h-full rounded-full object-cover"
+          />
+        }
+        items={dropdownMenuItems()}
+        specialItems={dropdownMenuSpecialItems}
+      />
 
       <>
         <div className="flex items-center justify-between mb-2">
@@ -66,7 +70,7 @@ const RightSidebar = ({ user }: { user: User }) => {
             <div key={user.id} className="flex justify-between">
               <figure className="flex items-center gap-2">
                 <Image
-                  src={user.image || "/icons/profile.svg"}
+                  src={user?.image || "/icons/profile.svg"}
                   alt={user.name}
                   width={44}
                   height={44}

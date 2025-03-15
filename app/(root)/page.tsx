@@ -1,5 +1,7 @@
 "use client"
 
+export const dynamic = "force-dynamic"
+
 import { LatestPodcastCard } from "@/components/global/podcast-cards/latest-podcast-card"
 import { PodcastCard } from "@/components/global/podcast-cards/podcast-card"
 import {
@@ -15,7 +17,7 @@ const PodcastHomePage = () => {
   const { recentPodcasts, isLoading } = useRecentPodcasts()
 
   return (
-    <div className="mt-9 max-md:mt-2 flex flex-col gap-9 md:overflow-hidden">
+    <div className="flex flex-col gap-9 md:overflow-hidden">
       <section className="flex flex-col gap-8">
         {trendingPodcasts && (
           <div className="flex flex-col gap-3">
@@ -41,7 +43,7 @@ const PodcastHomePage = () => {
           <div className="flex flex-col gap-3">
             <h1 className="text-20 font-bold text-white-1">Popular Podcasts</h1>
             <div className="podcast_grid">
-              {popularPodcasts.map((podcast: Podcast) => (
+              {popularPodcasts?.map((podcast: Podcast) => (
                 <PodcastCard key={podcast.id} podcast={podcast} />
               ))}
             </div>

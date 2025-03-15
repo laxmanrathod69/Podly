@@ -33,7 +33,7 @@ export const Player = () => {
   if (!currentPodcast) return null
 
   return (
-    <Card className="fixed bottom-0 left-0 right-0 p-4 glassmorphism-black border-t rounded-t-3xl rounded-b-none border-none z-50">
+    <Card className="fixed h-20 bottom-0 left-0 right-0 p-4 glassmorphism-black border-t rounded-t-3xl rounded-b-none border-none z-50">
       <div className="flex items-center justify-between gap-4">
         <audio
           src={currentPodcast.audio || undefined}

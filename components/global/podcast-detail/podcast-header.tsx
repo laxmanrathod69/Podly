@@ -30,9 +30,9 @@ export const PodcastHeader = ({ isOwner, podcast }: PodcastHeaderProps) => {
   }
 
   return (
-    <header className="mt-5 md:mt-8 w-full flex flex-col gap-8">
+    <header className="w-full flex flex-col gap-8">
       <div className="flex w-full gap-5 max-md:flex-col">
-        <div className="shadow-2xl">
+        <figure className="shadow-2xls">
           <Image
             src={podcast.imageUrl!}
             width={200}
@@ -40,14 +40,14 @@ export const PodcastHeader = ({ isOwner, podcast }: PodcastHeaderProps) => {
             alt="Podcast image"
             className="aspect-square object-cover rounded-lg max-w-[200px]"
           />
-        </div>
+        </figure>
         <div className="flex flex-col justify-end gap-4">
           <article className="text-3xl font-black tracking-[-0.32px] text-white-1">
             <h1>{podcast.title}</h1>
           </article>
           <figure className="flex items-center gap-2">
             <Image
-              src={podcast.user?.image!}
+              src={podcast.user?.image || "/icons/profile.svg"}
               width={30}
               height={30}
               alt="Caster icon"

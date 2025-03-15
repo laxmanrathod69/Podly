@@ -4,12 +4,12 @@ import { useEffect, useRef, useState } from "react"
 import { Button } from "../../ui/button"
 import { Label } from "../../ui/label"
 import { Textarea } from "../../ui/textarea"
-import { Loader, Loader2 } from "lucide-react"
 import { Input } from "../../ui/input"
 import Image from "next/image"
 import { ThumbnailGenerateProps } from "@/types/indexx"
 import { useGenerateThumbnail } from "@/hooks/podcast/generate-podcast-thumbnail"
-import { Toast } from "../toast"
+import { toast } from "sonner"
+import { Loader } from "../loader"
 
 const GenerateThumbnail = ({
   imageUrl,
@@ -43,7 +43,8 @@ const GenerateThumbnail = ({
       const files = e.target.files
       if (!files) {
         setIsLoading(false)
-        return <Toast type="error" message="No file selected" />
+        toast.error("No file selected")
+        return
       }
       const file = files[0]
       const blob = await file.arrayBuffer().then((ab) => new Blob([ab]))
@@ -51,7 +52,8 @@ const GenerateThumbnail = ({
       handleUploadedImage(blob, file.name)
     } catch (error) {
       console.error(`An error occured: ${error}`)
-      return <Toast type="error" message="Something went wrong" />
+      setIsLoading(false)
+      toast.error("An error occured")
     }
   }
 
@@ -84,7 +86,7 @@ const GenerateThumbnail = ({
               className="input-class font-light focus-visible:ring-offset-orange-1"
               placeholder="Your answer here..."
               rows={5}
-              value={imagePrompt ?? undefined}
+              value={imagePrompt}
               onChange={(e) => setImagePrompt(e.target.value)}
             />
           </div>
@@ -96,18 +98,13 @@ const GenerateThumbnail = ({
               onClick={(e) => {
                 e.preventDefault()
                 if (!isPending) {
-                  generateThumbnail(imagePrompt!)
+                  generateThumbnail(imagePrompt)
                 }
               }}
             >
-              {isPending ? (
-                <>
-                  <Loader2 size={16} className="animate-spin mr-2" />
-                  Generating..
-                </>
-              ) : (
-                "Generate"
-              )}
+              <Loader isLoading={isPending} variant="spin">
+                Generate
+              </Loader>
             </Button>
           </div>
         </div>
@@ -120,19 +117,16 @@ const GenerateThumbnail = ({
             disabled={isLoading}
             onChange={uploadImage}
           />
-          {!isLoading ? (
+
+          <Loader isLoading={isLoading} variant="spin2" label="Uploading...">
             <Image
               src="/icons/upload-image.svg"
               alt="upload"
               width={40}
               height={40}
             />
-          ) : (
-            <div className="text-16 flex-center font-medium text-white-1">
-              <Loader size={20} className="animate-spin mr-2" />
-              Uploading..
-            </div>
-          )}
+          </Loader>
+
           <div className="flex flex-col items-center gap-1">
             <h2 className="text-12 font-bold text-orange-1">Click to upload</h2>
             <p className="text-12 font-normal text-gray-1">

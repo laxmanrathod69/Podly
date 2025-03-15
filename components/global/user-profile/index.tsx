@@ -33,10 +33,10 @@ export const UserProfile = ({ userId, authUserId }: Props) => {
   if (!user?.id) return null
 
   const isCurrentlyPlaying =
-    currentPodcast?.id === user.podcast?.[0].id && isPlaying
+    currentPodcast?.id === user.podcast?.[0]?.id && isPlaying
 
   const handlePlayPause = () => {
-    if (currentPodcast?.id === user.podcast?.[0].id) {
+    if (currentPodcast?.id === user.podcast?.[0]?.id) {
       togglePlayPause()
     } else {
       playPodcast(user.podcast?.[0]!)
@@ -44,15 +44,15 @@ export const UserProfile = ({ userId, authUserId }: Props) => {
   }
 
   return (
-    <div className="grid grid-cols-1">
-      <header className="lg:h-[276px] flex gap-6 max-md:flex-col p-6 drop-shadow-md glassmorphism-black rounded-md">
+    <div className="grid grid-cols-1 w-full h-full">
+      <header className="lg:h-[276px] w-full flex gap-6 max-md:flex-col drop-shadow-md rounded-md">
         <figure>
           <Image
-            src={user.image || "/icons/profile.svg"}
+            src={user?.image || "/icons/profile.svg"}
             alt="User image"
             width={232}
             height={232}
-            className="rounded-md shadow-lg aspect-square object-cover w-full h-full"
+            className="md:w-full h-full rounded-md shadow-lg aspect-square object-cover"
           />
         </figure>
         <div className="flex flex-col gap-3 justify-end">
@@ -73,7 +73,7 @@ export const UserProfile = ({ userId, authUserId }: Props) => {
       </header>
       <section className="pt-8 flex flex-col gap-8">
         <div className="flex items-center justify-start gap-6">
-          {user?.podcast?.length && (
+          {user?.podcast?.length ? (
             <Button
               type="button"
               size="icon"
@@ -86,6 +86,8 @@ export const UserProfile = ({ userId, authUserId }: Props) => {
                 <PlayCircle w="50" h="50" />
               )}
             </Button>
+          ) : (
+            ""
           )}
 
           <div className="hover:scale-110 transition-all duration-75 ease-in">

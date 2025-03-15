@@ -53,7 +53,9 @@ export const SignUpForm = () => {
           className="rounded-lg bg-orange-1 hover:bg-orange-700 transition-all ease-in-out duration-200 h-8"
           disabled={creating}
         >
-          <Loader loading={creating}>Sign Up with Email</Loader>
+          <Loader isLoading={creating} label="Verifying..." variant="spin2">
+            Sign Up with Email
+          </Loader>
         </Button>
       ) : (
         <Button
@@ -64,7 +66,7 @@ export const SignUpForm = () => {
             onGenerateCode(getValues("email"), getValues("password"))
           }
         >
-          <Loader loading={false}>Generate Code</Loader>
+          Generate Code
         </Button>
       )}
     </form>

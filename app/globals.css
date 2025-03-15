@@ -20,7 +20,7 @@ html {
     @apply grid grid-cols-1 gap-4 md:gap-0 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5;
   }
   .right_sidebar {
-    @apply sticky right-0 top-0 flex w-[310px] flex-col overflow-y-hidden border-none bg-black-1 px-[30px] pt-4 max-xl:hidden lg:h-screen;
+    @apply sticky right-0 top-0 flex w-[310px] flex-col overflow-y-hidden border-none bg-black-1 px-[30px] pt-4 max-xl:hidden;
   }
   .left_sidebar {
     @apply sticky left-0 top-0 flex w-fit flex-col  justify-between border-none  bg-black-1 pt-8 text-white-1 max-md:hidden lg:h-screen lg:w-[270px] lg:pl-8;

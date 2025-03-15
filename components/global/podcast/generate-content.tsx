@@ -3,11 +3,11 @@
 import { Label } from "../../ui/label"
 import { Textarea } from "../../ui/textarea"
 import { Button } from "../../ui/button"
-import { Loader2 } from "lucide-react"
 import { GeneratePodcastContentProps } from "@/types/indexx"
 import { useGenerateContent } from "@/hooks/podcast/generate-podcast-content"
 import { useEffect } from "react"
 import { formatTime } from "@/lib/formatTime"
+import { Loader } from "../loader"
 
 export const GeneratePodcastContent = (props: GeneratePodcastContentProps) => {
   const { generateContent, isPending, data } = useGenerateContent()
@@ -48,14 +48,9 @@ export const GeneratePodcastContent = (props: GeneratePodcastContentProps) => {
             }
           }}
         >
-          {isPending ? (
-            <>
-              <Loader2 size={16} className="animate-spin mr-2" />
-              Generating..
-            </>
-          ) : (
-            "Generate"
-          )}
+          <Loader isLoading={isPending} variant="spin">
+            Generate
+          </Loader>
         </Button>
       </div>
       {data?.audioUrl && (

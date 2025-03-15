@@ -12,12 +12,15 @@ export const GlobalDropdownMenu = ({
   trigger,
   items,
   specialItems,
+  className,
 }: DropDownMenuProps) => {
   const handleItemClick = (action: () => void) => action()
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>{trigger}</DropdownMenuTrigger>
+      <DropdownMenuTrigger className={`outline-none ${className}`}>
+        {trigger}
+      </DropdownMenuTrigger>
       <DropdownMenuContent
         className="w-fit p-1 m-0 bg-black-6 rounded-md border-none cursor-default"
         side="bottom"

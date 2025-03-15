@@ -84,5 +84,5 @@ export const useRecentPodcasts = () => {
     return { recentPodcasts: null, isLoading, error }
   }
 
-  return { recentPodcasts: data.data, isLoading, error: null }
+  return { recentPodcasts: data.data as Podcast[], isLoading, error: null }
 }

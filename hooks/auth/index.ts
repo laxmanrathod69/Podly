@@ -109,7 +109,7 @@ export const useAuthSignUp = () => {
       }
     } catch (error: any) {
       console.error(JSON.stringify(error, null, 2))
-      toast.error("Oops! something went wrong.")
+      toast.error(error.message || "Oops! something went wrong.")
     }
   }
 
@@ -152,7 +152,7 @@ export const useAuthSignUp = () => {
 
         if (user.status !== 200) {
           toast.error(user.message)
-          router.refresh
+          router.refresh()
         }
 
         setCreating(false)
@@ -162,7 +162,7 @@ export const useAuthSignUp = () => {
       }
     } catch (error: any) {
       console.error(JSON.stringify(error, null, 2))
-      toast.error("Oops! something went wrong.")
+      toast.error(error.message || "Oops! something went wrong.")
     }
   })
 
@@ -195,7 +195,7 @@ export const useGoogleAuth = () => {
         redirectUrlComplete: "/callback/sign-in",
       })
     } catch (error: any) {
-      toast.error("Oops! something went wrong")
+      toast.error(error.message || "Oops! something went wrong")
     }
   }
 
@@ -211,7 +211,7 @@ export const useGoogleAuth = () => {
         redirectUrlComplete: "/callback/complete",
       })
     } catch (error: any) {
-      toast.error("Oops! something went wrong")
+      toast.error(error.message || "Oops! something went wrong")
     }
   }
 

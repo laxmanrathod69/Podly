@@ -13,9 +13,7 @@ const LeftSidebar = () => {
 
   return (
     <section
-      className={cn("left_sidebar h-[calc(100vh-5px)]", {
-        "h-[calc(100vh-140px)]": !!currentPodcast || null,
-      })}
+      className={`left_sidebar ${currentPodcast?.id ? "h-[calc(100vh-80px)]" : "h-screen"}`}
     >
       <nav className="flex flex-col gap-6">
         <Link

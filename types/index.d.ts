@@ -93,3 +93,10 @@ declare interface SliderProps {
   value: number
   handleChange: (val: number[]) => void
 }
+
+declare interface LoaderProps {
+  children: React.ReactNode
+  isLoading: boolean
+  label?: string
+  variant?: "spin" | "spin2"
+}

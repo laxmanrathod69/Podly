@@ -86,9 +86,6 @@
     "**/*.{js,ts,jsx,tsx}": [
       "eslint --fix",
       "prettier --write --ignore-unknown"
-    ],
-    "**/*.{css,scss,tsx,ts,jsx,js}": [
-      "stylelint --fix"
     ]
   },
   "pnpm": {
