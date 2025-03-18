@@ -1,7 +1,5 @@
 "use client"
 
-export const dynamic = "force-dynamic"
-
 import { LatestPodcastCard } from "@/components/global/podcast-cards/latest-podcast-card"
 import { PodcastCard } from "@/components/global/podcast-cards/podcast-card"
 import {
