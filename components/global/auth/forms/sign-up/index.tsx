@@ -46,7 +46,7 @@ export const SignUpForm = () => {
           />
         ))
       )}
-      <div id="clerk-captcha" className="mb-5"></div>
+
       {verifying ? (
         <Button
           type="submit"

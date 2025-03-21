@@ -3,8 +3,12 @@ import Image from "next/image"
 import { redirect } from "next/navigation"
 
 const AuthLayout = async ({ children }: ChildrenProp) => {
-  const user = await currentUser()
-  if (user?.id) redirect("/")
+  try {
+    const user = await currentUser()
+    if (user?.id) redirect("/")
+  } catch (error: any) {
+    console.error(`Error in AuthLayout: ${JSON.stringify(error, null, 2)}`)
+  }
 
   return (
     <main className="relative h-screen w-full">

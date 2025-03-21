@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import { SIGN_IN_FORM } from "@/constants"
 import { useAuthSignIn } from "@/hooks/auth/index"
 import { FormGenerator } from "../form-generator"
-import { Loader2 } from "lucide-react"
 import { Loader } from "@/components/global/loader"
 
 export const SignInForm = () => {
@@ -12,9 +11,6 @@ export const SignInForm = () => {
 
   return (
     <form className="flex flex-col gap-3 mt-7" onSubmit={onAuthenticateUser}>
-      {/* Clerk CAPTCHA Component */}
-      <div id="clerk-captcha"></div>
-
       {SIGN_IN_FORM.map((field) => (
         <FormGenerator
           {...field}

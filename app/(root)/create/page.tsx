@@ -17,6 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useCurrentUser } from "@/hooks/auth"
 import GenerateThumbnail from "@/components/global/podcast/generate-thumbnail"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 const CreatePodcast = () => {
   const [audioUrl, setAudioUrl] = useState<string | undefined>(undefined)
@@ -30,6 +31,7 @@ const CreatePodcast = () => {
 
   const { user, isLoading } = useCurrentUser()
   const { createPodcast, isPending } = useCreatePodcast()
+  const router = useRouter()
 
   const form = useForm<PodcastFormValues>({
     resolver: zodResolver(podcastFormSchema),
@@ -39,7 +41,10 @@ const CreatePodcast = () => {
     },
   })
 
-  if (!user?.id) return null
+  if (!user) {
+    router.push("/sign-in")
+    return null
+  }
 
   const onSubmit = (data: z.infer<typeof podcastFormSchema>) => {
     if (

@@ -1,16 +1,19 @@
+"use client"
+
 import Image from "next/image"
 import { SignInForm } from "./sign-in"
 import { SignUpForm } from "./sign-up"
 import { Separator } from "@/components/ui/separator"
 import { GoogleAuthButton } from "../../google-oauth-button"
 import Link from "next/link"
+import { memo, useMemo } from "react"
 
 interface Props {
   type: "signIn" | "signUp"
 }
 
-const AuthForm = ({ type }: Props) => {
-  const isSignIn = type === "signIn"
+const AuthForm = memo(({ type }: Props) => {
+  const isSignIn = useMemo(() => type === "signIn", [type])
 
   return (
     <div className="flex flex-col rounded-2xl px-9 py-8 w-[25rem] min-h-[30rem] h-auto bg-black-1">
@@ -32,6 +35,8 @@ const AuthForm = ({ type }: Props) => {
           </p>
         </div>
       </div>
+      <div id="clerk-captcha" className="mb-5"></div>
+
       {isSignIn ? <SignInForm /> : <SignUpForm />}
       <div className="my-7 w-full relative">
         <div className="bg-black-1 p-3 absolute text-white-4 text-xs top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -50,6 +55,8 @@ const AuthForm = ({ type }: Props) => {
       </p>
     </div>
   )
-}
+})
+
+AuthForm.displayName = "AuthForm"
 
 export default AuthForm

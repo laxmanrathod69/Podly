@@ -53,7 +53,6 @@ declare interface AudioPlayerContextType {
 
 declare interface PodcastDetailProps {
   podcastId: string
-  userId: string
 }
 
 declare interface PodcastHeaderProps {

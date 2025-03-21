@@ -26,7 +26,10 @@ const RightSidebar = ({ user }: { user: User }) => {
     return RIGHTSIDEBAR_USER_PROFILE_SPECIAL_ITEMS
   }, [])
 
-  if (!user?.id) return null
+  if (!user?.id) {
+    router.push("/sign-in")
+    return null
+  }
 
   return (
     <section

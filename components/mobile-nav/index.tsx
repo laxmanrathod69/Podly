@@ -1,6 +1,6 @@
 "use client"
 
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import {
@@ -16,10 +16,13 @@ import { cn } from "@/lib/utils"
 import { SIDEBAR_ITEMS } from "@/constants/constant"
 
 const MobileNav = ({ user }: { user: User }) => {
+  const pathname = usePathname()
+  const router = useRouter()
+
   if (!user?.id) {
+    router.push("/sign-in")
     return null
   }
-  const pathname = usePathname()
 
   return (
     <Sheet>
