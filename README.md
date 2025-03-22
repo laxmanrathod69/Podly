@@ -1,6 +1,6 @@
 <div align="center">
   <br />
-    <a href="https://podly-rose.vercel.app" target="_blank">
+    <a href="https://podlyai.vercel.app/" target="_blank">
       <img src="https://github.com/laxmanrathod69/Podly/blob/main/public/banner/podly_banner_image.png" alt="Project Banner">
     </a>
   <br />
