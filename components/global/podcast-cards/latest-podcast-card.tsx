@@ -23,14 +23,14 @@ export const LatestPodcastCard = ({ podcast }: { podcast: Podcast }) => {
   }
 
   return (
-    <div className="flex flex-col w-full gap-5">
-      <div className="flex items-center justify-between gap-10 text-white-1 font-semibold text-sm">
+    <div className="flex flex-col w-full gap-5 max-md:gap-3">
+      <div className="flex justify-between items-center max-lg:justify-normal max-lg:gap-8 text-white-1 font-semibold text-sm">
         <div className="flex items-center gap-6">
           <Button
             type="button"
             size="icon"
             onClick={handlePlayPause}
-            className="cursor-pointer rounded-full"
+            className="cursor-pointer rounded-full max-md:hidden"
             aria-label="Play podcast"
             title="Play podcast"
           >
@@ -51,10 +51,12 @@ export const LatestPodcastCard = ({ podcast }: { podcast: Podcast }) => {
               height={52}
               className="rounded-md aspect-square object-cover"
             />
-            <p className="truncate w-72 hover:underline">{podcast.title}</p>
+            <p className="truncate w-72 max-md:w-fit hover:underline">
+              {podcast.title}
+            </p>
           </Link>
         </div>
-        <div className="flex items-center gap-16">
+        <div className="flex items-center gap-16 max-md:hidden">
           <div className="flex items-center gap-4">
             <Image
               src="/icons/headphone.svg"
@@ -64,7 +66,7 @@ export const LatestPodcastCard = ({ podcast }: { podcast: Podcast }) => {
             />
             <p>{podcast.listeners}</p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 max-lg:hidden">
             <Image
               src="/icons/watch.svg"
               alt="duration"

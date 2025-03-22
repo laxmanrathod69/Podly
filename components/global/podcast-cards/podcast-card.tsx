@@ -19,7 +19,7 @@ export const PodcastCard = ({ podcast }: { podcast: Podcast }) => {
         alt={podcast.title}
         width={175}
         height={175}
-        className="aspect-square object-cover h-fit w-full rounded-md"
+        className="w-full max-lg:w-56 rounded-md shadow-lg aspect-square object-cover"
       />
     ),
     [podcast.imageUrl, podcast.title],
@@ -32,7 +32,7 @@ export const PodcastCard = ({ podcast }: { podcast: Podcast }) => {
     >
       <figure className="grid grid-cols-1 gap-2">
         {podcastImage}
-        <div className="flex flex-col">
+        <div className="flex flex-col max-md:w-56">
           <h1 className="text-sm truncate font-semibold text-white-1">
             {podcast.title}
           </h1>

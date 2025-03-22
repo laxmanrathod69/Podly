@@ -2,12 +2,27 @@
 
 import { usePodcastDetails } from "@/hooks/podcast/podcast-details"
 import { PodcastHeader } from "./podcast-header"
+import { useCurrentUser } from "@/hooks/auth"
+import { useRouter } from "next/navigation"
+import { useEffect, useMemo } from "react"
 
-const PodcastDetails = ({ podcastId, userId }: PodcastDetailProps) => {
+const PodcastDetails = ({ podcastId }: PodcastDetailProps) => {
+  const { user } = useCurrentUser()
   const { podcast } = usePodcastDetails(podcastId)
-  if (!podcast?.id) return null // TODO: add error page
+  const router = useRouter()
 
-  const isOwner: boolean = userId === podcast.user_id
+  const isOwner = useMemo(
+    () => user?.id === podcast?.user_id,
+    [user?.id, podcast?.user_id],
+  )
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/sign-in")
+    }
+  }, [user, router])
+
+  if (!podcast?.id) return null // TODO: add error page
 
   return (
     <section className="flex w-full flex-col gap-5">

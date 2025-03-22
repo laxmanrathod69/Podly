@@ -9,7 +9,6 @@
     "selector-class-pattern": null,
     "declaration-block-single-line-max-declarations": null,
     "no-invalid-double-slash-comments": null,
-    "parseError": null,
     "no-duplicate-selectors": null,
     "no-descending-specificity": null
   }

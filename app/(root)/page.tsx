@@ -16,7 +16,7 @@ const PodcastHomePage = () => {
 
   return (
     <div className="flex flex-col gap-9 md:overflow-hidden">
-      <section className="flex flex-col gap-8">
+      <section className="flex flex-col gap-8 max-md:items-center max-md:gap-6">
         {trendingPodcasts && (
           <div className="flex flex-col gap-3">
             <h1 className="text-20 font-bold text-white-1">

@@ -32,6 +32,11 @@ const HomeLayout = async ({ children }: ChildrenProp) => {
   const user = authenticated.data as User
 
   await query.prefetchQuery({
+    queryKey: ["current-user"],
+    queryFn: onAuthenticatedUser,
+  })
+
+  await query.prefetchQuery({
     queryKey: ["trending-podcasts"],
     queryFn: onGetTrendingPodcasts,
   })
@@ -58,7 +63,7 @@ const HomeLayout = async ({ children }: ChildrenProp) => {
           <LeftSidebar />
           <section className="flex min-h-screen flex-1 flex-col px-4 sm:px-6 pt-2">
             <div className="mx-auto flex w-full max-w-5xl flex-col max-sm:px-4">
-              <div className="flex h-16 items-center justify-between md:hidden">
+              <div className="flex h-16 items-center justify-between sm:hidden">
                 <Image
                   src="/icons/logo.svg"
                   alt="menu logo"

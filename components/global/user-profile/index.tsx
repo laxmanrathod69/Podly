@@ -7,11 +7,12 @@ import { PlayCircle } from "@/public/icons/play-circle"
 import Image from "next/image"
 import { GlobalDropdownMenu } from "../drop-down"
 import { ThreeDots } from "@/public/icons/three-dots"
-import { useCallback, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { USER_PROFILE_ITEMS } from "@/constants/constant"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
 
 interface Props {
   userId: string
@@ -24,35 +25,39 @@ export const UserProfile = ({ userId, authUserId }: Props) => {
   const { userData: user, isLoading } = useUserProfileData(userId)
   const { currentPodcast, playPodcast, togglePlayPause, isPlaying } =
     usePodcast()
+  const router = useRouter()
 
-  const dropdownMenuItems = useCallback(() => {
+  const dropdownMenuItems = useMemo(() => {
     const isOwner = authUserId === user?.id
     return USER_PROFILE_ITEMS(isOwner)
   }, [authUserId, user?.id])
 
-  if (!user?.id) return null
+  const handlePlayPause = useCallback(() => {
+    if (currentPodcast?.id === user?.podcast?.[0]?.id) {
+      togglePlayPause()
+    } else {
+      playPodcast(user?.podcast?.[0]!)
+    }
+  }, [currentPodcast?.id, playPodcast, togglePlayPause, user?.podcast])
+
+  if (!user?.id) {
+    router.push("/sign-in")
+    return null
+  }
 
   const isCurrentlyPlaying =
     currentPodcast?.id === user.podcast?.[0]?.id && isPlaying
 
-  const handlePlayPause = () => {
-    if (currentPodcast?.id === user.podcast?.[0]?.id) {
-      togglePlayPause()
-    } else {
-      playPodcast(user.podcast?.[0]!)
-    }
-  }
-
   return (
     <div className="grid grid-cols-1 w-full h-full">
-      <header className="lg:h-[276px] w-full flex gap-6 max-md:flex-col drop-shadow-md rounded-md">
+      <header className="h-full w-full flex gap-6 max-md:flex-col drop-shadow-md rounded-md max-sm:items-center">
         <figure>
           <Image
             src={user?.image || "/icons/profile.svg"}
             alt="User image"
-            width={232}
-            height={232}
-            className="md:w-full h-full rounded-md shadow-lg aspect-square object-cover"
+            width={200}
+            height={200}
+            className="w-56 h-56 max-md:w-56 max-md:h-56 rounded-md shadow-lg aspect-square object-cover"
           />
         </figure>
         <div className="flex flex-col gap-3 justify-end">
@@ -86,14 +91,12 @@ export const UserProfile = ({ userId, authUserId }: Props) => {
                 <PlayCircle w="50" h="50" />
               )}
             </Button>
-          ) : (
-            ""
-          )}
+          ) : null}
 
           <div className="hover:scale-110 transition-all duration-75 ease-in">
             <GlobalDropdownMenu
               trigger={<ThreeDots />}
-              items={dropdownMenuItems()}
+              items={dropdownMenuItems}
             />
           </div>
         </div>
@@ -130,7 +133,7 @@ export const UserProfile = ({ userId, authUserId }: Props) => {
                         href={`/podcast/${podcast.id}`}
                         className="truncate"
                       >
-                        <h3 className="text-base font-semibold text-white-1 hover:underline">
+                        <h3 className="text-base font-semibold text-white-1 hover:underline max-sm:text-xs">
                           {podcast.title}
                         </h3>
                       </Link>
